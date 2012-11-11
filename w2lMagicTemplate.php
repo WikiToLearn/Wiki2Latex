@@ -34,6 +34,7 @@ $tmpl = <<<EOF
 \usepackage{multirow}
 \usepackage{fullpage}
 \usepackage{float}
+\usepackage{parskip}
 \usepackage{listings}
 \usepackage{textcomp}
 \usepackage{hyperref}
