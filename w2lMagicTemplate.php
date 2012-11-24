@@ -59,6 +59,9 @@ $tmpl = <<<EOF
 \\newcommand{\\e}{\\vathrm{e}}
 \\newcommand{\\field}[1]{\\mathbb{#1}}
 
+\\newcommand{\\bra}[1]{\\left< #1 \\right|}
+\\newcommand{\\ket}[1]{\\left| #1 \\right>}
+
 \\newcommand{\\executeiffilenewer}[3]{%
 \\ifnum\\pdfstrcmp{\\pdffilemoddate{#1}}%
 {\\pdffilemoddate{#2}}>0%
