@@ -37,7 +37,7 @@ $tmpl = <<<EOF
 \usepackage{parskip}
 \usepackage{listings}
 \usepackage{textcomp}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 
 \usepackage[urw-garamond]{mathdesign}
 
