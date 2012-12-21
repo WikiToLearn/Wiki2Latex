@@ -4,7 +4,7 @@
  * File: w2lLaTeXCompiler.php
  *
  * Purpose:
- * Provides the cli-interface to LaTeX
+ * Provides the commandLine-interface to LaTeX
  *
  * License:
  * This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@ class Wiki2LaTeXCompiler {
 	function generateFiles($tpl_vars) {
 		global $wgOut;
 		$msg = '';
-		$tempdir  = wfTempDir();
+		$tempdir  = wfTempDir(); // temporary dir
 		$tempdir .= DIRECTORY_SEPARATOR.'w2ltmp-'.$this->piece;
 		$this->path = $tempdir;
 

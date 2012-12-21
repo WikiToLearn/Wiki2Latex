@@ -54,6 +54,7 @@ class Wiki2LaTeXParser {
 		$this->config["use_hyperref"]      = true;
 		$this->config["leave_noinclude"]   = false;
 		$this->config["babel"] = 'english';
+		
 		$this->tag_source  = array();
 		$this->tag_replace = array();
 		$this->tags_replace = array();
@@ -75,6 +76,7 @@ class Wiki2LaTeXParser {
 
 		$this->mw_vars = array();
 		$this->content_cache = array();
+
 		// Parserfunctions...
 		$this->pFunctions = array(); // takes custom ones (#switch)
 		$this->cpFunctions = array(); // takes those without #
