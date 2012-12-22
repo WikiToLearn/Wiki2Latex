@@ -6,7 +6,7 @@
  * Purpose:
  * Contains the main class, which provides the export-functionality to Mediawiki
  * 
- * This page handle the latex-option form generation.
+ * This page handles the latex-option form generation.
  *
  * License:
  * This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@ class Wiki2LaTeXCore {
 	}
 	
 	public function onUnknownAction($action, &$article) {
-		/*This function handle the actions of wiki2latex. */
+		/*This function handles the actions of wiki2latex. */
 
 		// Here comes all the stuff to show the form and parse it...
 		global $wgTitle, $wgOut, $wgUser;
