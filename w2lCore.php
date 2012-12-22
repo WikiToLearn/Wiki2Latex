@@ -5,6 +5,8 @@
  *
  * Purpose:
  * Contains the main class, which provides the export-functionality to Mediawiki
+ * 
+ * This page handles the latex-option form generation.
  *
  * License:
  * This program is free software; you can redistribute it and/or modify
@@ -41,6 +43,8 @@ class Wiki2LaTeXCore {
 	}
 	
 	public function onUnknownAction($action, &$article) {
+		/*This function handles the actions of wiki2latex. */
+
 		// Here comes all the stuff to show the form and parse it...
 		global $wgTitle, $wgOut, $wgUser;
 		
@@ -53,7 +57,7 @@ class Wiki2LaTeXCore {
 			$this->mArticle =& $article;
 			$this->mTitle   =& $wgTitle;
 			$this->mUser    =& $wgUser;
-			$this->mValues  = new webRequest();
+			$this->mValues  = new webRequest(); /*Deprecated [search on mediawiki.org]*/
 
 			// Wiki2LaTeX objects
 			$this->Parser = new Wiki2LaTeXParser;
@@ -65,7 +69,7 @@ class Wiki2LaTeXCore {
 			$this->mwVars = $this->prepareVariables(); // mem
 			$this->Parser->setMwVariables($this->mwVars);
 
-			$success = $this->$action();
+			$success = $this->$action(); /*? call the appropriate function*/
 
 			return false;
 		} else {
@@ -75,7 +79,12 @@ class Wiki2LaTeXCore {
 	
 	// These Methods to do the work we have to do
 	private function onLatexform( $msg_add = '' ) {
-		global $wgOut, $wgScriptPath, $wgExtraNamespaces, $wgUser, $w2lLanguages;
+	    /*The connected hook is called when you click on the tab (for text view: w2lMessages.php»'w2l_tab') .
+	    /*
+	    /**/
+		global $wgOut; 
+		global $wgScriptPath; //The base URL path.[mediawiki.org]
+		global $wgExtraNamespaces, $wgUser, $w2lLanguages;
 
 		if ( $this->config['auto_clear_tempfolder'] == true ) {
 			$cl_temp = $this->clearTempFolder();
@@ -86,7 +95,8 @@ class Wiki2LaTeXCore {
 		$namespace = $this->mTitle->getNamespace();
 
 		$select['template'] = $this->config['default_template'];
-
+		
+		//?what?
 		if ( isset($this->config['defaults']) ) {
 			foreach ($this->config['defaults'] as $def_line) {
 				if ( preg_match('/'.preg_quote($def_line['search']).'/', $title) ) {
@@ -109,7 +119,7 @@ class Wiki2LaTeXCore {
 		
 		$fieldsets = array();
 		
-		$export_options['legend'] = wfMsg('w2l_select_output');
+		$export_options['legend'] = wfMsg('w2l_select_output'); /*wfMsg is now deprecated[mediawiki.org]*/
 		$export_options['html'] = '<button type="submit" name="action" value="w2ltextarea">'.wfMsg('w2l_select_textarea').'</button>';
 		$export_options['html'] .= '<button type="submit" name="action" value="w2ltexfiles">'.wfMsg('w2l_select_texfiles').'</button>';
 
@@ -119,7 +129,7 @@ class Wiki2LaTeXCore {
 			$export_options['html'] .= '</button>';
 		}
 
-		// Exportoptionen
+		// Export options in user page
 
 		$field_opt  = '<label>Documentclass: <select name="documentclass" id="documentclass">';
 		$field_opt .= '<option value="book">'.wfMsg('w2l_select_docclass_book').'</option>'."\n";
@@ -133,8 +143,9 @@ class Wiki2LaTeXCore {
 		$field_opt .= '<option value="2" selected="selected">'.wfMsg('w2l_select_processtemplates').'</option>'."\n";
 		$field_opt .= '</select>'."\n";
 		$fieldsets[100] = array('legend' => wfMsg('w2l_options'), 'html' => $field_opt );
-		// Language for Babel:
-		
+
+
+		// Language for Babel: Is it used??
 		$field_babel = '<label>'.wfMsg('w2l_select_babel_language').': ';
 		$field_babel .= '<select name="babel">';
 		$babel_default = $wgUser->getOption('w2lBabelDefault');
@@ -272,6 +283,7 @@ class Wiki2LaTeXCore {
 	}
 
 	private function onPdf($compile = true) {
+		/*Called on "compile pdf"*/
 		global $wgOut, $wgLang, $IP, $wgScriptPath, $wgUser;
 
 		if ( ($this->config['pdfexport'] == false) AND ($compile == true) ) {
@@ -327,7 +339,8 @@ class Wiki2LaTeXCore {
 		// define the path for the files...
 		// Create temp-folder
 		$tmpPiece = $this->getTempDirPiece();
-
+		
+		/*Now it's time to compile!!*/
 		$compiler = new Wiki2LaTeXCompiler($tmpPiece, true);
 
 		$compiler->addFiles($files);

@@ -48,19 +48,22 @@ $wgAutoloadClasses['Wiki2LaTeXParser']   = dirname(__FILE__) . '/w2lParser.php';
 $wgAutoloadClasses['Wiki2LaTeXCore']     = dirname(__FILE__) . '/w2lCore.php';
 $wgAutoloadClasses['Wiki2LaTeXCompiler'] = dirname(__FILE__) . '/w2lLaTeXCompiler.php';
 
-$wgHooks['SkinTemplateContentActions'][] = array(&$w2lHelper);
-$wgHooks['SkinTemplateNavigation'][]     = array(&$w2lHelper);
-$wgHooks['UnknownAction'][]              = array(&$w2lHelper);
+// Connect to hooks
+$wgHooks['SkinTemplateContentActions'][] = array(&$w2lHelper); /*This feature was removed completely in version 1.18.0.Maybe it could be removed!![mediawiki.org]*/
+$wgHooks['SkinTemplateNavigation'][]     = array(&$w2lHelper); /*http://www.mediawiki.org/wiki/Manual:Hooks/SkinTemplateNavigation */
+$wgHooks['UnknownAction'][]              = array(&$w2lHelper); /*This hook allows you to add custom actions to MediaWiki. If an action is requested that the software doesn't handle natively, this hook will be called. [Mediawiki.org]. In w2lHelper::onUnknownAction there is the instantiation of Wiki2LaTeXCore.*/
 $wgHooks['BeforePageDisplay'][]          = array(&$w2lHelper);
 $wgHooks['GetPreferences'][]             = array(&$w2lHelper);
-$wgHooks['ParserFirstCallInit'][]        = array(&$w2lExtensionTags, 'Setup');
+
+$wgHooks['ParserFirstCallInit'][]        = array(&$w2lExtensionTags, 'Setup'); /* called when the parser initialises for the first time[mediawiki.org]*/
 
 // Internal usage of hooks
 $wgHooks['w2lInitParser'][] =  array(&$w2lExtensionTags, 'w2lSetup'); //"Wiki2LaTeXTags::w2lSetup"
 
+// Messages.php - multilanguages string
 $wgExtensionMessagesFiles['wiki2latex']  = dirname( __FILE__ ) . '/w2lMessages.php';
 
-$wgExtensionFunctions[] = array(&$w2lHelper, 'Setup');
+$wgExtensionFunctions[] = array(&$w2lHelper, 'Setup'); /*This variable is an array that stores functions to be called after most of MediaWiki initialization is complete. It should be used for final step of initialization of extension setup code that needs to perform advanced things, like using global functions and instantiating autoloaded classes.[mediawiki.org]*/
 
 
 

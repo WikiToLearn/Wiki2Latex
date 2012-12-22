@@ -80,8 +80,8 @@ class Wiki2LaTeXTags {
 
 		switch ($mode) {
 			case 'wiki':
-				$output = "<p><strong>Benoetigte Datei</strong>: ".$input."</p>";
-				$output = "'''Ben&ouml;tigte Datei''': [[".$input."]]";
+				$output = "<p><strong>Benoetigte Datei</strong>: ".$input."</p>"; /*Useless line, content overwritten later*/
+				$output = "'''Ben&ouml;tigte Datei''': [[".$input."]]";/*Useless line, content overwritten later*/
 				$output = $parser->recursiveTagParse($output);
 
 			break;

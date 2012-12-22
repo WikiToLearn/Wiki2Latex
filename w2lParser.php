@@ -54,6 +54,7 @@ class Wiki2LaTeXParser {
 		$this->config["use_hyperref"]      = true;
 		$this->config["leave_noinclude"]   = false;
 		$this->config["babel"] = 'english';
+		
 		$this->tag_source  = array();
 		$this->tag_replace = array();
 		$this->tags_replace = array();
@@ -75,6 +76,7 @@ class Wiki2LaTeXParser {
 
 		$this->mw_vars = array();
 		$this->content_cache = array();
+
 		// Parserfunctions...
 		$this->pFunctions = array(); // takes custom ones (#switch)
 		$this->cpFunctions = array(); // takes those without #
@@ -421,7 +423,7 @@ class Wiki2LaTeXParser {
 			$this->setVal($key, $value);
 		}
 
-		//$this->addCoreParserFunction();
+		//$this->addCoreParserFunction($tag,$callback);
 		$this->addCoreParserFunction( 'int', array( 'CoreParserFunctions', 'intFunction' ) );
 		$this->addCoreParserFunction( 'ns', array( 'CoreParserFunctions', 'ns' )  );
 		$this->addCoreParserFunction( 'urlencode', array( 'CoreParserFunctions', 'urlencode' )  );
@@ -909,7 +911,7 @@ class Wiki2LaTeXParser {
 	private function doInternalLinks( $str = '' ) {
 		$fName = __METHOD__;
 		$this->profileIn($fName);
-		// match everything within [[...]]
+		// match everything within [[...]] and call internalLinkHelper
 		$str = preg_replace_callback('/\[\[(.*?)\]\]/', array($this, 'internalLinkHelper'), $str);
 		$this->profileOut($fName);
 		return $str;
@@ -920,9 +922,12 @@ class Wiki2LaTeXParser {
 		// category-links, image-links, Page-links... Whatever
 		$matches[1] = trim($matches[1]);
 		
+		//there could be also the text, not only the url
 		$link_tmp = explode("|", $matches[1], 2);
+		
 
 		$link_int  = $link_tmp[0];
+		//take the link text
 		$link_text = ( isset($link_tmp[1]) ) ? $link_tmp[1] : $link_tmp[0];
 
 		$title = Title::newFromText($link_int);
@@ -954,7 +959,7 @@ class Wiki2LaTeXParser {
 				// this is just a link to the mediawiki-page
 				return $link_text;
 			break;
-			case NS_IMAGE:
+			case NS_IMAGE: /*Image*/
 				$link = $title;
 
 				$parts = explode("|", $matches[1]);
@@ -1943,6 +1948,7 @@ class Wiki2LaTeXParser {
 	
 	/* Toolkit functions */
 	private function uniqueString() {
+		/*Return a random genereted string*/
 		return dechex(mt_rand(0, 0x7fffffff)) . dechex(mt_rand(0, 0x7fffffff));
 	}
 	/* Profiling and debugging functions */

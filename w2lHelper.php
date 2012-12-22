@@ -4,7 +4,7 @@
  * File: w2lHelper.php
  *
  * Purpose:
- * Provides all functions, which integrate into Mediawiki
+ * Provides all functions, which integrate into Mediawiki. Connection to the hooks listed in wiki2latex.php.
  *
  * License:
  * This program is free software; you can redistribute it and/or modify
@@ -43,6 +43,8 @@ class Wiki2LaTeXHelper {
 		
 		$this->messagesLoaded = false;
 		$this->config  =& $w2lConfig;
+
+		//Set wiki2latex recognized actions.
 		$this->actions = array('w2llatexform', 'w2ltexfiles', 'w2lpdf', 'w2ltextarea', 'w2lcleartempfolder');
 		
 		return true;       
@@ -93,25 +95,30 @@ EOF;
 
 	}
 
-	public function onSkinTemplateContentActions(&$content_actions) {
-		// Here comes the small Wiki2LaTeX-Tab
+	public function onSkinTemplateContentActions(&$content_actions) { /*Check the wiki2latex.php file, where there is the hook*/
+		// Generate the small Wiki2LaTeX-Tab
 		global $wgUser;
 		global $wgTitle;
 
+		// Check if messages are loaded. If not do so.
 		if ($this->messagesLoaded == false ) {
 			wfLoadExtensionMessages( 'wiki2latex' );
 			$this->messagesLoaded = true;
 		}
-		$values = new webRequest();
+
+		$values = new webRequest(); /*Info: http://www.mediawiki.org/wiki/Manual:WebRequest.php*/
 		$action = $values->getVal('action');
 
-		$current_ns       = $wgTitle->getNamespace();
-		$disallow_actions = array('edit', 'submit'); // disallowed actions
+		$current_ns = $wgTitle->getNamespace(); /*This deprecated feature should no longer be used, but is still available for reasons of backwards compatibility. This feature was deprecated in version 1.19.*/
 
+		$disallow_actions = array('edit', 'submit'); // disallowed actions
+		
+		 /*Do not show the tab for anonymous or logged off users */
 		if ( ($wgUser->getID() == 0) AND ($this->config['allow_anonymous'] == false) ) {
 			return true;
 		}
 
+		/*Check current and allowed Namespaces and, finally, generate the tab!*/
 		if ( ( in_array($current_ns, $this->config['allowed_ns']) ) and !in_array($action, $disallow_actions)) {
 			$content_actions['latex'] = array(
 				'class' => ( in_array($action, $this->actions )  ) ? 'selected' : false,
@@ -125,8 +132,10 @@ EOF;
 	
 	public function onSkinTemplateNavigation(&$sktemplate, &$links) {
 
-		global $wgUser, $wgTitle;
-
+		global $wgUser;
+		global $wgTitle;
+		
+		// Check if messages are loaded. If not do so.
 		if ($this->messagesLoaded == false ) {
 			wfLoadExtensionMessages( 'wiki2latex' );
 			$this->messagesLoaded = true;
@@ -134,13 +143,14 @@ EOF;
 		$values = new webRequest();
 		$action = $values->getVal('action');
 
-		$current_ns       = $wgTitle->getNamespace();
+		$current_ns = $wgTitle->getNamespace();
 		$disallow_actions = array('edit', 'submit'); // disallowed actions
 
 		if ( ($wgUser->getID() == 0) AND ($this->config['allow_anonymous'] == false) ) {
 			return true;
 		}
 
+		/*Check current and allowed Namespaces and, finally, generate the tab!*/
 		if ( ( in_array($current_ns, $this->config['allowed_ns']) ) and !in_array($action, $disallow_actions)) {
 			$links['views']['wiki2latex'] = array(
 				'class' => ( in_array($action, $this->actions )  ) ? 'selected' : false,
@@ -156,8 +166,8 @@ EOF;
 	public function onUnknownAction($action, $article) {
 		global $wgUser;
 		// Check the requested action
-		// return if not for w2l
-		//return true;
+		// return true if is not an action for w2l.
+		// otherwise return false;
 
 		$action = strtolower($action);
 		if ( !in_array($action, $this->actions) ) {
@@ -170,20 +180,21 @@ EOF;
 			return true;
 		}
 		
-		if ( !$this->messagesLoaded ) {
+		if ( $this->messagesLoaded  == false) {
 			$this->onLoadAllMessages();
 		}
 
-		// we are on our own now!
+		// we are on our own, now!
 		
-		$w2l = new Wiki2LaTeXCore;
+		$w2l = new Wiki2LaTeXCore; /*Go to the main code!!*/
 		$w2l->onUnknownAction($action, $article);
 		return false;
 
 	}
 	
 
-	function onGetPreferences ( $user, &$preferences ) {
+	function onGetPreferences ( $user, &$preferences ) { 
+	/*Hook to  GetPreferences ?Modify user preferences.?*/
 		global $w2lLanguages;
 		wfLoadExtensionMessages( 'wiki2latex' );
 		$preferences['w2lShowLog'] = array(
