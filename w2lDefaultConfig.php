@@ -45,9 +45,12 @@ $w2lConfig['process_curly_braces'] = '2';
 // This command should work. Before your try to enable pdfexport, please try this
 // command on your local shell.
 $w2lConfig['ltx_command'] = 'pdflatex --shell-escape -interaction=batchmode %file%';
-$w2lConfig['ltx_sort']    = 'makeindex %file%'; // unused
+$w2lConfig['ltx_sort']    = 'makeindex %file%'; // unused (?)
 $w2lConfig['ltx_bibtex']  = 'bibtex %file%';    // unused
-$w2lConfig['ltx_repeat']  = 3;
+/**
+ * $w2lConfig['ltx_repeat'] sets how many times the compilation of the LaTeX file is repeated.
+ */
+$w2lConfig['ltx_repeat']  = 3; 
 
 $w2lConfig['auto_clear_tempfolder'] = false;
 

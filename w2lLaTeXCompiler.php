@@ -98,6 +98,7 @@ class Wiki2LaTeXCompiler {
 	
 		$go  = true;
 		$i   = 1;
+		//message with operation returning status
 		$msg  = $this->msg;
 		
 		$msg .= wfMsg('w2l_compile_command', $command )."\n";

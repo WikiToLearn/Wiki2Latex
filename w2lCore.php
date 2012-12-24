@@ -785,7 +785,9 @@ class Wiki2LaTeXCore {
 		$text  = $rev->getContent();
 		return $text;
 	}
-
+/**
+ * Prepare the links at end of the box. Delete temporary data.
+ */
 	public function getFolderLinks() {
 		$output = '<div style="text-align:right;">';
 
