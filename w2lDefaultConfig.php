@@ -51,7 +51,12 @@ $w2lConfig['ltx_repeat']  = 3;
 
 $w2lConfig['auto_clear_tempfolder'] = false;
 
+/**
+ * Location of default templates.
+ */
 $w2lConfig['magic_template'] = 'w2lMagicTemplate.php';
+$w2lConfig['kindle_template'] = 'w2lKindleTemplate.php';
+
 
 $w2lConfig['div'] = array (  );
 

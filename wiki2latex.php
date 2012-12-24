@@ -20,7 +20,7 @@ if ( !defined('MEDIAWIKI') ) {
 	exit( 1 );
 }
 
-define('W2L_VERSION', 'Aegaeon: 2011-02-22');
+define('W2L_VERSION', 'Devel: Dec2012'); //Wiki2LaTeX version
 
 $w2lConfig          = array();
 $w2lTags            = array();

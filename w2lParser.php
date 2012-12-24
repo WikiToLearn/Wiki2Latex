@@ -113,7 +113,9 @@ class Wiki2LaTeXParser {
 
 		return true;
 	}
-
+/**
+ * Return config values.
+ */
 	public function getVal($key) {
 		if ( array_key_exists($key, $this->config) ) {
 			return $this->config[$key];
@@ -208,7 +210,7 @@ class Wiki2LaTeXParser {
 			break;
 		}
 
-                wfRunHooks('w2lBeginParse', array( &$this, &$text ) ); // run them again: maybe curly brackets have shown sth
+		wfRunHooks('w2lBeginParse', array( &$this, &$text ) ); // run them again: maybe curly brackets have shown sth
 
 		//$this->reportError($text, __METHOD__);
 		wfRunHooks("w2lBeforeExtractTags", array( &$this, &$text ) );
@@ -2435,10 +2437,18 @@ class Wiki2LaTeXParser {
 	public function addLatexHeadCode($code) {
 		$this->latex_headcode[] = $code;
 	}
+/**
+ * write somethink about latex_headcode
+ */
 	public function getLatexHeadCode() {
-		$code = array_unique($this->latex_headcode);
+		$code = array_unique($this->latex_headcode); //array_unique: Removes duplicate values from an array
 		return trim(implode("\n", $code));
 	}
+/**
+ * [complete] Generete the list of LaTeX Packages needed.
+ * 
+ * \usepackage[options]{packageName}
+ */
 	public function getUsePackageBlock() {
 		$packages = '';
 		foreach($this->required_packages as $package => $options) {
