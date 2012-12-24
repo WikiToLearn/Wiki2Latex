@@ -98,7 +98,7 @@ class Wiki2LaTeXCore {
 
 		$select['template'] = $this->config['default_template'];
 		
-		//?what?
+		//?why?
 		if ( isset($this->config['defaults']) ) {
 			foreach ($this->config['defaults'] as $def_line) {
 				if ( preg_match('/'.preg_quote($def_line['search']).'/', $title) ) {
@@ -176,10 +176,10 @@ class Wiki2LaTeXCore {
 			$templ_field .= '<option value="auto">Standard (a4)</option>'."\n";
 		}
 
-		if ($select['template'] == 'empty' ) {
-			$templ_field .= '<option value="empty" selected="selected">(Empty)</option>'."\n";
+		if ($select['template'] == 'kindle' ) {
+			$templ_field .= '<option value="kindle" selected="selected">(Empty)</option>'."\n";
 		} else {
-			$templ_field .= '<option value="empty">Kindle (small e-reader)</option>'."\n";
+			$templ_field .= '<option value="kindle">Kindle (small e-reader)</option>'."\n";
 		}
 
 		// Auswahl des Templates...
@@ -321,7 +321,7 @@ class Wiki2LaTeXCore {
 		if ( $temp_id == 'auto' ) {
 			// create a template automagically,
 			$template = $this->createMagicTemplate();
-		} else if ( $temp_id == 'empty' ) {
+		} else if ( $temp_id == 'kindle' ) {
 			$template = $this->createKindleTemplate();
 			// Use empty for a complete page of LaTeX-Code
 //			$template  = '==Wiki2LaTeX\'s Empty Template=='."\n";
