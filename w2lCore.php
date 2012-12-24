@@ -182,7 +182,7 @@ class Wiki2LaTeXCore {
 			$templ_field .= '<option value="kindle">Kindle (small e-reader)</option>'."\n";
 		}
 
-		// Auswahl des Templates...
+		// Selection of templates...
 		if ( !is_array($wgExtraNamespaces) ) {
 			$LaTeX_namespace = false;
 		} else {
