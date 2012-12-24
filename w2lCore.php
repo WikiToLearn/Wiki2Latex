@@ -315,6 +315,7 @@ class Wiki2LaTeXCore {
 		// we need that template-file...
 		$temp_id = $this->mValues->getVal("template"); //??
 
+		// PARSE! 
 		$parsed = $this->Parser->parse($to_parse, $this->mTitle);
 
 		if ( $temp_id == 'auto' ) {
@@ -340,8 +341,8 @@ class Wiki2LaTeXCore {
 
 		// Now the template vars need to be put into ((var))
 		$tpl_vars = array();
-		foreach($template_vars as $tplv_key => $tplv_value) {
-			$tpl_vars['(('.$tplv_key.'))'] = $tplv_value;
+		foreach($template_vars as $tplVar_key => $tplVar_value) {
+			$tpl_vars['(('.$tplVar_key.'))'] = $tplVar_value;
 		}
 		// define the path for the files...
 		// Create temp-folder
@@ -793,7 +794,11 @@ class Wiki2LaTeXCore {
 		$output .= '</div>';
 		return $output;
 	}
-
+/**
+ * Generate a random name for a temporary directory.
+ * 
+ * @return string name of the directory
+ */
 	public function getTempDirPiece() {
 		return $piece = time()."-".rand();
 	}

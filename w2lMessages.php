@@ -63,6 +63,8 @@ $messages['en'] = array(
 	'w2l_result_title' => '$1 (Wiki2LaTeX)',
 	'w2l_export_mode' => '<p>Mode: $1</p>',
 	'w2l_compile_command' => 'Command: $1',
+	'w2l_creating_file_success' => 'Creating file $1 with $2 Bytes '."\n", 
+	'w2l_creating_file_error' => 'Error creating file $1'."\n",
 	'w2l_temppath' => 'Path: $1',
 	'w2l_compile_run' => '== Run #$1 ==',
 	'w2l_result_heading' => '<h2>LaTeX-Result</h2>',
