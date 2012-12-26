@@ -191,7 +191,10 @@ class Wiki2LaTeXParser {
 		wfRunHooks('w2lBeginParse', array( &$this, &$text ) );
 
 		wfRunHooks('w2lBeforeCut', array( &$this, &$text ) );
-		
+
+		//start wikifm mod
+		$text = $this->processPageLatexCode($text);
+
 		$text = $this->preprocessString($text);
 
 		// First, strip out all comments...
@@ -250,6 +253,59 @@ class Wiki2LaTeXParser {
 		$this->parse_time = $time_end - $time_start;
 		$this->profileOut(__METHOD__);
 		return $text;
+	}
+/**
+ * Get all LaTeX code written in the page between special tags and remove from parser action.
+ * 
+ * Start with text between \begin{equation} and \end{equation}
+ * @author Alberto Giudici
+ * @version 0.1
+ * @return formatted text
+ */
+	function processPageLatexCode($pageText){
+		$fName = __METHOD__;
+		$this->profileIn($fName);
+		
+		//<math></math> : inline math LaTeX $ .
+		//watch out <math> tag can have attributes!
+		$reMath = '/<(\s*math\s*)\b[^>]*>(.*?)<\/\1\s*>/';
+		//do the replacing
+  		$pageText = preg_replace_callback( $reMath, array($this,'maskLatexCodeInline'), $pageText);
+
+		$this->maskLatexCodeEquation($pageText);
+// 		$pageText = preg_replace_callback( $reEquation, array($this,'maskLatexCodeEquation'), $pageText);
+		$this->profileOut($fName);
+		return $pageText;
+	}
+/**
+ * Callback for replace
+ * 
+ * Start with text between \begin{equation} and \end{equation}
+ * @author Alberto Giudici
+ * @version 0.1
+ * 
+ */
+	public function maskLatexCodeEquation($pageText){
+		
+		$startSplitted = preg_split('/\\\\begin\{equation\*?\}/',$pageText);
+		
+		array_shift($startSplitted);
+		foreach($startSplitted as $part){
+			$endSplitted = preg_split('/\\\\end\{equation\*?\}/',$part);
+			$content = array_shift($endSplitted);
+			
+			$equationMk = $this->getMark('latex-code-equation');
+			$this->mask($equationMk, "\begin{equation*}".$content."\end{equation*}");
+			
+			$pageText = preg_replace('/\\\\begin\{equation\*?\}'.$content.'\\\\end\{equation\*?\}/i', $equationMk,$pageText);
+		}
+		//print_r($pageText);
+		return $pageText;
+	}
+	public function maskLatexCodeInline($match){
+		$inlineMk = $this->getMark('latex-code-inline');
+		$this->mask($inlineMk, "$".$match[2]."$");
+		return $inlineMk;
 	}
 
 	function addChar($html, $latex, $utf_dec = false, $req_package = false) {
@@ -468,7 +524,7 @@ class Wiki2LaTeXParser {
 		$this->addSimpleReplace(" -\n"," --\n");
 		$this->addSimpleReplace("\n- ", "\n-- ");
 
-		$this->addSimpleReplace("...","{\dots}");//??
+		$this->addSimpleReplace("...","{\dots}");//attention:
 
 		
 		include('w2lChars.php');
@@ -484,7 +540,6 @@ class Wiki2LaTeXParser {
  * Substitute special chars:  
  * $chars = array(
 			"…"=>"{\dots}",
-			"…"=>"{\dots}",
 			'~'=> '\(\sim\)',
 			'€'=> '{\euro}',
 		);
@@ -492,7 +547,6 @@ class Wiki2LaTeXParser {
 	function doSpecialChars($str) {
 
 		$chars = array(
-			"…"=>"{\dots}",
 			"…"=>"{\dots}",
 			'~'=> '\(\sim\)',
 			'€'=> '{\euro}',
@@ -2045,8 +2099,8 @@ class Wiki2LaTeXParser {
 		$fName = __METHOD__;
 		$this->profileIn($fName);
 
-		str_replace("\\begin{equation}", ":<math>", $str);
-      str_replace("\\end{equation}", "</math>", $str);
+// 		str_replace("\\begin{equation}", ":<math>", $str);
+//       str_replace("\\end{equation}", "</math>", $str);
 
 		// Chars, which are important for latex commands:
 		// {,},\,&
@@ -2069,7 +2123,7 @@ class Wiki2LaTeXParser {
 		return $str;
 	}
 /**
- * Create mask(& substitution) for special mediawiki chars: // # * (others are ignored)
+ * Substitute special mediawiki chars: // # * (others are ignored)
  */ 
 	public function maskMwSpecialChars($str) {
 		$fName = __METHOD__;
@@ -2107,6 +2161,7 @@ class Wiki2LaTeXParser {
  * like links, f.e.
  * 
  * Marker structure: '((UNIQ-W2L-'.$this->unique.'-'.$tag.'-'.sprintf('%08X', $number).'-QINU))'
+ * @param $number user defined number for this marker; Default: -1, use generated one.
  * @return a marker
  */
 	public function getMark($tag, $number = -1) {
@@ -2240,22 +2295,22 @@ class Wiki2LaTeXParser {
 				$args = $this->processArgString($args);
 				$tmp = $this->getContentByTitle($title);
 		// HORRIBLE HACK
-		$text = $tmp;
-                $text = str_replace(":<math>", "<math style=\"equation\">", $text);
-                $text = str_replace(": <math>", "<math style=\"equation\">", $text);
-
-                $text = str_replace("\\begin{equation}", "<math style=\"equation\">", $text);
-                $text = str_replace("\\end{equation}", "</math>", $text);
-                $text = str_replace("\\begin{multline}", "<math style=\"multline\">", $text);
-                $text = str_replace("\\end{multline}", "</math>", $text);
-                $text = str_replace("\\begin{gather}", "<math style=\"gather\">", $text);
-                $text = str_replace("\\end{gather}", "</math>", $text);
-                $text = str_replace("\\begin{align}", "<math style=\"align\">", $text);
-                $text = str_replace("\\end{align}", "</math>", $text);
-
-                $text = str_replace("\\begin{split}", "<math style=\"display\">i\begin{split}", $text);
-                $text = str_replace("\\end{split}", "\\end{split}</math>", $text);
-		$tmp = $text;
+// 		$text = $tmp;
+//                 $text = str_replace(":<math>", "<math style=\"equation\">", $text);
+//                 $text = str_replace(": <math>", "<math style=\"equation\">", $text);
+// 
+//                 $text = str_replace("\\begin{equation}", "<math style=\"equation\">", $text);
+//                 $text = str_replace("\\end{equation}", "</math>", $text);
+//                 $text = str_replace("\\begin{multline}", "<math style=\"multline\">", $text);
+//                 $text = str_replace("\\end{multline}", "</math>", $text);
+//                 $text = str_replace("\\begin{gather}", "<math style=\"gather\">", $text);
+//                 $text = str_replace("\\end{gather}", "</math>", $text);
+//                 $text = str_replace("\\begin{align}", "<math style=\"align\">", $text);
+//                 $text = str_replace("\\end{align}", "</math>", $text);
+// 
+//                 $text = str_replace("\\begin{split}", "<math style=\"display\">i\begin{split}", $text);
+//                 $text = str_replace("\\end{split}", "\\end{split}</math>", $text);
+// 		$tmp = $text;
 				$tmp = $this->preprocessString($tmp);
 				$tmp = $this->processTemplateVariables($tmp, $args);
 				$tmp = $this->processCurlyBraces($tmp);
