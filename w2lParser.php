@@ -92,7 +92,7 @@ class Wiki2LaTeXParser {
 		$this->mInPre = false;
 
 		// Special-chars array...
-		$this->sc = array();
+		$this->specialChars = array();
 		
 		// For sorting and bibtex:
 		$this->run_bibtex = false;
@@ -126,7 +126,8 @@ class Wiki2LaTeXParser {
 
 	public function addSimpleReplace($search, $replace, $case_sensitive = 1) {
 		if ($case_sensitive == 0 ) {
-			$this->ireplace_search[]  = $search;
+			//case INsensitive replace
+			$this->ireplace_search[]  = $search; 
 			$this->ireplace_replace[] = $replace;
 		} else {
 			$this->replace_search[]  = $search;
@@ -188,8 +189,8 @@ class Wiki2LaTeXParser {
 		wfRunHooks('w2lBeginParse', array( &$this, &$text ) );
 
 		wfRunHooks('w2lBeforeCut', array( &$this, &$text ) );
+		
 		$text = $this->preprocessString($text);
-
 
 		// First, strip out all comments...
 		wfRunHooks('w2lBeforeStrip', array( &$this, &$text ) );
@@ -413,14 +414,15 @@ class Wiki2LaTeXParser {
 		
 		$this->unique = $this->uniqueString();
 		
+		// add callback to tags: look at Wiki2LaTeXTags.
 		foreach($w2lTags as $key => $value) {
 			$this->addTagCallback($key, $value);
 		}
-
+		//Where is global $w2lParserFunctions defined??
 		foreach($w2lParserFunctions as $key => $value) {
 			$this->addParserFunction($key, $value);
 		}
-
+		//load configuration parameters
 		foreach($w2lConfig as $key => $value) {
 			$this->setVal($key, $value);
 		}
@@ -458,7 +460,7 @@ class Wiki2LaTeXParser {
 		$this->addSimpleReplace(" -\n"," --\n");
 		$this->addSimpleReplace("\n- ", "\n-- ");
 
-		$this->addSimpleReplace("...","{\dots}");
+		$this->addSimpleReplace("...","{\dots}");//??
 
 		
 		include('w2lChars.php');
@@ -584,10 +586,12 @@ class Wiki2LaTeXParser {
 		$str = preg_replace_callback('/<nowiki>(.*)<\/nowiki>/smU', array($this,'noWikiMarker'), $str);
 		return $str;
 	}
-
+/**
+ * Callback for matchNoWiki replace.
+ */
 	function noWikiMarker($match) {
-		//
 		++$this->nowikiCounter;
+		//get a nowikiMarker
 		$marker = $this->getMark('nowiki', $this->nowikiCounter);
 		$str = $this->maskLatexCommandChars($match[1]);
 		$str = $this->maskLatexSpecialChars($str);
@@ -879,7 +883,7 @@ class Wiki2LaTeXParser {
 		$headings_latex = $headings_latex = array('part', 'chapter', 'section',  'subsection',  'subsubsection', 'paragraph', 'subparagraph');
 		
 		$asteriks = $this->getMark('Asteriks');
-		$this->sc['asteriks'] = $asteriks;
+		$this->specialChars['asteriks'] = $asteriks;
 		$this->mask($asteriks, '*');
 
 		$heading_command = '';
@@ -1994,18 +1998,18 @@ class Wiki2LaTeXParser {
 		$this->profileIn($fName);
 
 		str_replace("\\begin{equation}", ":<math>", $str);
-                str_replace("\\end{equation}", "</math>", $str);
+      str_replace("\\end{equation}", "</math>", $str);
 
 		// Chars, which are important for latex commands:
 		// {,},\,&
 		$this->Et = $this->getMark("Et");
-		$this->sc['backslash'] = $this->getMark('backslash');
+		$this->specialChars['backslash'] = $this->getMark('backslash');
 		
 		$this->mask($this->Et, '\&');
-		$this->mask($this->sc['backslash'], '\\textbackslash ');
+		$this->mask($this->specialChars['backslash'], '\\textbackslash ');
 		
 		$chars = array(
-	//		'\\' => $this->sc['backslash'],
+	//		'\\' => $this->specialChars['backslash'],
 	//		"{" => "\{",
 	//		"}" => "\}",
 			'&' => $this->Et,
@@ -2044,14 +2048,17 @@ class Wiki2LaTeXParser {
 		$this->profileOut($fName);
 		return $str;
 	}
-
+/** 
+ * This function takes strings, which are to be inserted in verabtimenv,
+ * like links, f.e.
+ * 
+ * Marker structure: '((UNIQ-W2L-'.$this->unique.'-'.$tag.'-'.sprintf('%08X', $number).'-QINU))'
+ * @return a marker
+ */
 	public function getMark($tag, $number = -1) {
-		// This function takes strings, which are to be inserted in verabtimenv,
-		// like links, f.e.
-		// returns a marker
 		$fName = __METHOD__;
 		$this->profileIn($fName);
-		++$this->marks_counter;
+		++$this->marks_counter; 
 		if ($number == -1) {
 			$number = $this->marks_counter;
 		}
