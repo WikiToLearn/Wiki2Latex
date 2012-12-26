@@ -20,4 +20,5 @@ Notes on Parser:
 
 
 fixMainBug branch: KNOWN BUG
-- open and close <math></math> will produce $$, which is interpreted by LaTeX
+- FIX(now an empty space is left bewteen dollars)open and close <math></math> will produce $$, which is interpreted by LaTeX 
+- act like other LaTeX code inside a wiki page for \begin{multline} \begin{align}

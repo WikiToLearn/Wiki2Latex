@@ -178,25 +178,27 @@ class Wiki2LaTeXParser {
 		/* parse a given wiki-string to latex */
 		/* if $transclusions is an array, then all transcluded files are in there */
 		$time_start = microtime(true);
-
+// 		print($text);
 
 		if ($this->initiated == false ) {
 			$this->initParsing();
 		}
 		$this->mTitle =& $title;
-
+// 		echo '<br />After initParsing:';print($text);
 		$text = trim($text);
 		$text = "\n".$text."\n";
-
-		wfRunHooks('w2lBeginParse', array( &$this, &$text ) );
-
-		wfRunHooks('w2lBeforeCut', array( &$this, &$text ) );
-
-		//start wikifm mod
+		
 		$text = $this->processPageLatexCode($text);
-
+// 		echo '<br />';print($text);
+		
+		wfRunHooks('w2lBeginParse', array( &$this, &$text ) ); //This hook call something, discover it!
+// 		echo '<br />After hooks1:';print($text);
+		wfRunHooks('w2lBeforeCut', array( &$this, &$text ) );
+// 		echo '<br />After hooks2:';print($text);
+		//start wikifm mod
+		
 		$text = $this->preprocessString($text);
-
+// 		echo '<br />';print($text);die();
 		// First, strip out all comments...
 		wfRunHooks('w2lBeforeStrip', array( &$this, &$text ) );
 		
