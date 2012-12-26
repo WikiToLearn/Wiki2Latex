@@ -327,6 +327,9 @@ class Wiki2LaTeXParser {
  */
 	public function maskLatexCodeInline($match){
 		$inlineMk = $this->getMark('latex-code-inline');
+		if ($match[2] == ''){ //no content between <math></math>!
+			$match[2] = ' ';
+		}
 		$this->mask($inlineMk, "$".$match[2]."$");
 		return $inlineMk;
 	}
