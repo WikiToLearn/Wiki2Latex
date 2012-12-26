@@ -272,36 +272,59 @@ class Wiki2LaTeXParser {
 		//do the replacing
   		$pageText = preg_replace_callback( $reMath, array($this,'maskLatexCodeInline'), $pageText);
 
-		$this->maskLatexCodeEquation($pageText);
+		$pageText = $this->maskLatexCodeEquation($pageText);
 // 		$pageText = preg_replace_callback( $reEquation, array($this,'maskLatexCodeEquation'), $pageText);
 		$this->profileOut($fName);
 		return $pageText;
 	}
 /**
- * Callback for replace
+ * Replace
  * 
- * Start with text between \begin{equation} and \end{equation}
+ * Start with text between \begin{equation} and \end{equation} and $$ $$
  * @author Alberto Giudici
  * @version 0.1
  * 
  */
 	public function maskLatexCodeEquation($pageText){
 		
-		$startSplitted = preg_split('/\\\\begin\{equation\*?\}/',$pageText);
+		$startSplitted = preg_split('/(\\\\begin\{equation\*?\})/',$pageText,0, PREG_SPLIT_DELIM_CAPTURE );
 		
 		array_shift($startSplitted);
-		foreach($startSplitted as $part){
-			$endSplitted = preg_split('/\\\\end\{equation\*?\}/',$part);
-			$content = array_shift($endSplitted);
+		for ($i=0;  $i < count($startSplitted);$i+=2){
+			$beginEnviron = $startSplitted[$i];//get \begin{equation\*?}
+			//print($beginEnviron);die();
+			$endSplitted = preg_split('/(\\\\end\{equation\*?\})/',$startSplitted[$i+1],0, PREG_SPLIT_DELIM_CAPTURE);
+			
+			$content = $endSplitted[0];
+			$endEnviron = $endSplitted[1];//get \end{equation\*?}
 			
 			$equationMk = $this->getMark('latex-code-equation');
-			$this->mask($equationMk, "\begin{equation*}".$content."\end{equation*}");
+			$all = $beginEnviron.$content.$endEnviron;
+			$this->mask($equationMk, $all);
 			
-			$pageText = preg_replace('/\\\\begin\{equation\*?\}'.$content.'\\\\end\{equation\*?\}/i', $equationMk,$pageText);
+			$pageText = str_replace($all, $equationMk, $pageText);
 		}
-		//print_r($pageText);
+		
+
+		$startSplitted = explode('$$',$pageText);
+		
+		array_shift($startSplitted);
+		for ($i=0;  $i < count($startSplitted);$i+=2){
+			
+			$content = $startSplitted[$i];
+			
+			$equationMk = $this->getMark('latex-code-equation');
+			$all = "$$".$content."$$";
+			$this->mask($equationMk, $all);
+			
+			$pageText = str_replace($all, $equationMk, $pageText);
+		}
+	
 		return $pageText;
 	}
+/**
+ * Callback for <math></math> substitution.
+ */
 	public function maskLatexCodeInline($match){
 		$inlineMk = $this->getMark('latex-code-inline');
 		$this->mask($inlineMk, "$".$match[2]."$");
