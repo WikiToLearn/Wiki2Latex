@@ -2092,9 +2092,9 @@ class Wiki2LaTeXParser {
 		$this->profileIn($fName);
 		// _,%,§,$,&,#,€,
 		$chars = array(
-		//	'_' => '\_',
+			'_' => '\_',
 			'%' => '\%',
-		//	'$' => '\$',
+			'$' => '\$',
 		);
 		
 		$str = strtr($str, $chars);
