@@ -1,11 +1,11 @@
 <?php
 /*
- * File:    w2lMagicTemplate.php
- * Created: 2008-07-01
- * Version: 0.9
+ * File:    w2lKindleTemplate.php
+ * Created: 2012-12-24
+ * Version: 0.1
  *
  * Purpose:
- * Contains the standard Magic-Template.
+ * Contains the standard Kindle-Template.
  *
  * License:
  * This program is free software; you can redistribute it and/or modify
@@ -87,7 +87,7 @@ $tmpl = <<<EOF
 \\begin{document}
 \\section*{WikiFM -- Don't panic}
 Documento scaricato da WikiFM, il wiki dove la scienza diventa libera, e patrimonio di tutti. Tutti i contenuti su WikiFM, incluso questo documento, sono rilasciati sotto licenza libera GNU GPL e CC-BY-SA.
-Guarda http://www.wikifm.org per maggiori informazioni, per ottenere il sorgente di questo documento, o per trovare altro materiale libero. Generato con Wiki2LaTeX (versione ((W2L_VERSION)) ).
+Guarda http://www.wikifm.org per maggiori informazioni, per ottenere il sorgente di questo documento, o per trovare altro materiale libero.
 
 WikiFM -- Libera Scienza.
 

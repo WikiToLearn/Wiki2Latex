@@ -44,10 +44,11 @@ class Wiki2LaTeXHelper {
 		$this->messagesLoaded = false;
 		$this->config  =& $w2lConfig;
 
-		//Set wiki2latex recognized actions.
+		//Set wiki2latex recognized actions. 
+		//You find the called methods in w2lCore.php (w2l***->on*** (with the first * Uppercase))
 		$this->actions = array('w2llatexform', 'w2ltexfiles', 'w2lpdf', 'w2ltextarea', 'w2lcleartempfolder');
 		
-		return true;       
+		return true;
 	}
 
 	function Setup() {
@@ -181,7 +182,7 @@ EOF;
 		}
 		
 		if ( $this->messagesLoaded  == false) {
-			$this->onLoadAllMessages();
+			$this->onLoadAllMessages();  /*Attention this function in undefined!!!! This will return an error*/
 		}
 
 		// we are on our own, now!

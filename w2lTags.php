@@ -49,7 +49,9 @@ class Wiki2LaTeXTags {
 
 		return true;
 	}
-	
+/**
+ * Add w2l tags, those tags have special meanings and are interpreted by w2l.
+ */
 	function w2lSetup(&$parser) {
 		global $w2lTags;
 		

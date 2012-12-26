@@ -40,18 +40,34 @@ include_once('contrib/pre.php');
 $w2lConfig['default_template'] = 'auto';
 
 $w2lConfig['docclass'] = 'article';
+
+/**
+ * $w2lConfig['process_curly_braces'] values:
+ *
+ *'0': remove everything between curly braces
+ *'1': do nothing
+ *'2': process them ((Wiki2LaTeXParser))
+ */
 $w2lConfig['process_curly_braces'] = '2';
 
 // This command should work. Before your try to enable pdfexport, please try this
 // command on your local shell.
 $w2lConfig['ltx_command'] = 'pdflatex --shell-escape -interaction=batchmode %file%';
-$w2lConfig['ltx_sort']    = 'makeindex %file%'; // unused
+$w2lConfig['ltx_sort']    = 'makeindex %file%'; // unused (?)
 $w2lConfig['ltx_bibtex']  = 'bibtex %file%';    // unused
-$w2lConfig['ltx_repeat']  = 3;
+/**
+ * $w2lConfig['ltx_repeat'] sets how many times the compilation of the LaTeX file is repeated.
+ */
+$w2lConfig['ltx_repeat']  = 3; 
 
 $w2lConfig['auto_clear_tempfolder'] = false;
 
+/**
+ * Location of default templates.
+ */
 $w2lConfig['magic_template'] = 'w2lMagicTemplate.php';
+$w2lConfig['kindle_template'] = 'w2lKindleTemplate.php';
+
 
 $w2lConfig['div'] = array (  );
 

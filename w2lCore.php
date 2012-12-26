@@ -5,8 +5,8 @@
  *
  * Purpose:
  * Contains the main class, which provides the export-functionality to Mediawiki
- * 
- * This page handles the latex-option form generation.
+ * It handles all the w2l new defined actions (see w2lHelper for a list of the new actions).
+ * This page handles the latex-option form generation (both in the user preferences page and in the "download pdf" page)
  *
  * License:
  * This program is free software; you can redistribute it and/or modify
@@ -41,10 +41,12 @@ class Wiki2LaTeXCore {
 		$this->config =& $w2lConfig;
 		return;
 	}
-	
+/**
+ * wiki2latex hooks handler.
+ * 
+ * This function creates an instance and initializes Wiki2LaTeXParser, then call the appropriate hook handler.
+ */
 	public function onUnknownAction($action, &$article) {
-		/*This function handles the actions of wiki2latex. */
-
 		// Here comes all the stuff to show the form and parse it...
 		global $wgTitle, $wgOut, $wgUser;
 		
@@ -96,7 +98,7 @@ class Wiki2LaTeXCore {
 
 		$select['template'] = $this->config['default_template'];
 		
-		//?what?
+		//?why?
 		if ( isset($this->config['defaults']) ) {
 			foreach ($this->config['defaults'] as $def_line) {
 				if ( preg_match('/'.preg_quote($def_line['search']).'/', $title) ) {
@@ -174,13 +176,13 @@ class Wiki2LaTeXCore {
 			$templ_field .= '<option value="auto">Standard (a4)</option>'."\n";
 		}
 
-		if ($select['template'] == 'empty' ) {
-			$templ_field .= '<option value="empty" selected="selected">(Empty)</option>'."\n";
+		if ($select['template'] == 'kindle' ) {
+			$templ_field .= '<option value="kindle" selected="selected">(Empty)</option>'."\n";
 		} else {
-			$templ_field .= '<option value="empty">Kindle (small e-reader)</option>'."\n";
+			$templ_field .= '<option value="kindle">Kindle (small e-reader)</option>'."\n";
 		}
 
-		// Auswahl des Templates...
+		// Selection of templates...
 		if ( !is_array($wgExtraNamespaces) ) {
 			$LaTeX_namespace = false;
 		} else {
@@ -281,10 +283,15 @@ class Wiki2LaTeXCore {
 		$wgOut->setSubtitle( wfMsg('w2l_result_subtitle', $title) );
 		return true;
 	}
-
+/**
+ * Called on "compile pdf".
+ * 
+ * onPdf fetches templates.
+ */
 	private function onPdf($compile = true) {
-		/*Called on "compile pdf"*/
-		global $wgOut, $wgLang, $IP, $wgScriptPath, $wgUser;
+		global $wgOut, $wgLang;
+		global $IP; //The full path to the installation directory.[mediawiki.org]
+		global $wgScriptPath, $wgUser;
 
 		if ( ($this->config['pdfexport'] == false) AND ($compile == true) ) {
 			// pdf export is not allowed, so don't export
@@ -294,10 +301,9 @@ class Wiki2LaTeXCore {
 
 		$output   = '';
 		$title    = $this->mTitle->getEscapedText();
-		$to_parse = $this->mArticle->getContent();
+		$to_parse = $this->mArticle->getContent(); //get article content
 
-		// Get Template-Vars...
-
+		// Parse Template-Vars ((TEMPLATE_VAR_NAME))
 		$template_vars = $this->getTemplateVars($to_parse);
 
 		$template_vars = array_merge($template_vars, $this->mwVars);
@@ -307,14 +313,15 @@ class Wiki2LaTeXCore {
 		wfRunHooks( 'w2lTemplateVarsLaTeX', array(&$this, &$template_vars) );
 
 		// we need that template-file...
-		$temp_id = $this->mValues->getVal("template");
+		$temp_id = $this->mValues->getVal("template"); //??
 
+		// PARSE! 
 		$parsed = $this->Parser->parse($to_parse, $this->mTitle);
 
 		if ( $temp_id == 'auto' ) {
 			// create a template automagically,
 			$template = $this->createMagicTemplate();
-		} else if ( $temp_id == 'empty' ) {
+		} else if ( $temp_id == 'kindle' ) {
 			$template = $this->createKindleTemplate();
 			// Use empty for a complete page of LaTeX-Code
 //			$template  = '==Wiki2LaTeX\'s Empty Template=='."\n";
@@ -325,6 +332,7 @@ class Wiki2LaTeXCore {
 		} else {
 			$template = $this->getTemplate($temp_id);
 		}
+		// retrieve template infos
 		$files = $this->createTemplateFiles($template);
 
 		// Adding some Template-Variables...
@@ -333,8 +341,8 @@ class Wiki2LaTeXCore {
 
 		// Now the template vars need to be put into ((var))
 		$tpl_vars = array();
-		foreach($template_vars as $tplv_key => $tplv_value) {
-			$tpl_vars['(('.$tplv_key.'))'] = $tplv_value;
+		foreach($template_vars as $tplVar_key => $tplVar_value) {
+			$tpl_vars['(('.$tplVar_key.'))'] = $tplVar_value;
 		}
 		// define the path for the files...
 		// Create temp-folder
@@ -462,45 +470,54 @@ class Wiki2LaTeXCore {
 
 		return $state;
 	}
-
+/**
+ * If no template is supplied, create the default one - MagicTemplate.
+ */
 	function createMagicTemplate() {
 		$packages = $this->Parser->getUsePackageBlock();
 		$babel    = $this->Parser->getVal('babel');
-		$code     = $this->Parser->getLatexHeadCode();
+		$headCode     = $this->Parser->getLatexHeadCode();
 		$docClass = $this->Parser->getVal('documentclass');
 		$docClassOptions = 'a4paper,12pt';
 		$fontSize = '12pt';
 		$paper = 'a4paper';
 		wfRunHooks('w2lMagicTemplateCreate', array(&$this, &$docClassOptions, &$paper) );
-		// Magic Template will be in $tmpl;
+
+		// Magic Template will be in $tmpl in the file $this->config['magic_template'] ;
 		include( $this->config['magic_template'] );
+		$tmpl = str_replace('((W2L_REQUIRED_PACKAGES))', $packages, $tmpl);
+		$tmpl = str_replace('((W2L_HEAD))', $headCode, $tmpl);
+		return $tmpl;
+	}
+/**
+ * If no template is supplied, create the default one - KindleTemplate.
+ */
+	function createKindleTemplate() {
+		$packages = $this->Parser->getUsePackageBlock();
+		$babel    = $this->Parser->getVal('babel');
+		$code     = $this->Parser->getLatexHeadCode();
+		$docClass = $this->Parser->getVal('documentclass');
+		$docClassOptions = 'a5paper,11pt';
+		$fontSize = '11pt';
+		$paper = 'a5paper';
+		wfRunHooks('w2lKindleTemplateCreate', array(&$this, &$docClassOptions, &$paper) );
+		// Kindle Template will be in $tmpl;
+		include( $this->config['kindle_template'] );
 		$tmpl = str_replace('((W2L_REQUIRED_PACKAGES))', $packages, $tmpl);
 		$tmpl = str_replace('((W2L_HEAD))', $code, $tmpl);
 		return $tmpl;
 	}
 
-        function createKindleTemplate() {
-                $packages = $this->Parser->getUsePackageBlock();
-                $babel    = $this->Parser->getVal('babel');
-                $code     = $this->Parser->getLatexHeadCode();
-                $docClass = $this->Parser->getVal('documentclass');
-                $docClassOptions = 'a5paper,11pt';
-                $fontSize = '11pt';
-                $paper = 'a5paper';
-                wfRunHooks('w2lMagicTemplateCreate', array(&$this, &$docClassOptions, &$paper) );
-                // Magic Template will be in $tmpl;
-                include( $this->config['magic_template'] );
-                $tmpl = str_replace('((W2L_REQUIRED_PACKAGES))', $packages, $tmpl);
-                $tmpl = str_replace('((W2L_HEAD))', $code, $tmpl);
-                return $tmpl;
-        }
-
-
+/**
+ * This function gets template variables which are used in the text of the article.
+ * 
+ * Look at documentation. 
+ * Example: \<templatevar vname="left">This is the left \LaTeX{} header\</templatevar>
+ */
 	public function getTemplateVars( $text ) {
 		$vars = array();
-
 		$parts = explode('<templatevar vname="', " ".$text);
-		array_shift($parts);
+		array_shift($parts); // Shift an element off the beginning of array
 		foreach ($parts as $part) {
 			$var = explode('">', $part);
 			$var_name = $var[0];
@@ -511,132 +528,137 @@ class Wiki2LaTeXCore {
 
 		return $vars;
 	}
+/**
+ * Prepare Variables for Wiki2LaTeXParser.
+ */
+	public function prepareVariables() {
+		
+		global $wgContLang;//The content language object is the Language object associated with the wiki being viewed.[mediawiki.org]
+		global $wgSitename, $wgServer, $wgServerName, $wgScriptPath;
+		global $wgContLanguageCode;
+		global $wgTitle;
 
-        public function prepareVariables() {
+		$this->mRevisionId = $this->mTitle->getLatestRevID();
 
-                global $wgContLang, $wgSitename, $wgServer, $wgServerName, $wgScriptPath;
-                global $wgContLanguageCode;
-                global $wgTitle;
+		$ts = time(); // Return current Unix timestamp
 
-                $this->mRevisionId = $this->mTitle->getLatestRevID();
+		# Use the time zone
+		global $wgLocaltimezone;
+		if ( isset( $wgLocaltimezone ) ) {
+				$oldtz = getenv( 'TZ' );
+				putenv( 'TZ='.$wgLocaltimezone );
+		}
 
-                $ts = time();
+		wfSuppressWarnings(); // E_STRICT system time bitching
+		$localTimestamp = date( 'YmdHis', $ts );
+		$localMonth = date( 'm', $ts );
+		$localMonthName = date( 'n', $ts );
+		$localDay = date( 'j', $ts );
+		$localDay2 = date( 'd', $ts );
+		$localDayOfWeek = date( 'w', $ts );
+		$localWeek = date( 'W', $ts );
+		$localYear = date( 'Y', $ts );
+		$localHour = date( 'H', $ts );
+		if ( isset( $wgLocaltimezone ) ) {
+				putenv( 'TZ='.$oldtz );
+		}
+		wfRestoreWarnings();
 
-                # Use the time zone
-                global $wgLocaltimezone;
-                if ( isset( $wgLocaltimezone ) ) {
-                        $oldtz = getenv( 'TZ' );
-                        putenv( 'TZ='.$wgLocaltimezone );
-                }
+		// some simpler ones...
 
-                wfSuppressWarnings(); // E_STRICT system time bitching
-                $localTimestamp = date( 'YmdHis', $ts );
-                $localMonth = date( 'm', $ts );
-                $localMonthName = date( 'n', $ts );
-                $localDay = date( 'j', $ts );
-                $localDay2 = date( 'd', $ts );
-                $localDayOfWeek = date( 'w', $ts );
-                $localWeek = date( 'W', $ts );
-                $localYear = date( 'Y', $ts );
-                $localHour = date( 'H', $ts );
-                if ( isset( $wgLocaltimezone ) ) {
-                        putenv( 'TZ='.$oldtz );
-                }
-                wfRestoreWarnings();
+		$w2lVars = array(
+				'currentmonth' =>  $wgContLang->formatNum( gmdate( 'm', $ts ) ),
+				'currentmonthname' => $wgContLang->getMonthName( gmdate( 'n', $ts ) ),
+				'currentmonthnamegen'=> $wgContLang->getMonthNameGen( gmdate( 'n', $ts ) ),
+				'currentmonthabbrev'=> $wgContLang->getMonthAbbreviation( gmdate( 'n', $ts ) ),
+				'currentday'=> $wgContLang->formatNum( gmdate( 'j', $ts ) ),
+				'currentday2'=> $wgContLang->formatNum( gmdate( 'd', $ts ) ),
+				'localmonth'=>$wgContLang->formatNum( $localMonth ),
+				'localmonthname' => $wgContLang->getMonthName( $localMonthName ),
+				'localmonthnamegen'=> $wgContLang->getMonthNameGen( $localMonthName ),
+				'localmonthabbrev'=> $wgContLang->getMonthAbbreviation( $localMonthName ),
+				'localday'=> $wgContLang->formatNum( $localDay ),
+				'localday2' => $wgContLang->formatNum( $localDay2 ),
+				'pagename' => wfEscapeWikiText( $this->mTitle->getText() ),
+				'pagenamee'=>$this->mTitle->getPartialURL(),
+				'fullpagename' =>wfEscapeWikiText( $this->mTitle->getPrefixedText() ),
+				'fullpagenamee' => $this->mTitle->getPrefixedURL(),
+				'subpagename' => wfEscapeWikiText( $this->mTitle->getSubpageText() ),
+				'subpagenamee' => $this->mTitle->getSubpageUrlForm(),
+				'basepagename' => wfEscapeWikiText( $this->mTitle->getBaseText() ),
+				'basepagenamee' => wfUrlEncode( str_replace( ' ', '_', $this->mTitle->getBaseText() ) ),
+				'revisionid' => $this->mRevisionId,
+				'revisionday' => intval( substr( $this->getRevisionTimestamp(), 6, 2 ) ),
+				'revisionday2' => substr( $this->getRevisionTimestamp(), 6, 2 ),
+				'revisionmonth' => intval( substr( $this->getRevisionTimestamp(), 4, 2 ) ),
+				'revisionyear' => substr( $this->getRevisionTimestamp(), 0, 4 ),
+				'revisiontimestamp' => $this->getRevisionTimestamp(),
+				'namespace' => str_replace('_',' ',$wgContLang->getNsText( $this->mTitle->getNamespace() ) ),
+				'namespacee' => wfUrlencode( $wgContLang->getNsText( $this->mTitle->getNamespace() ) ),
+				'talkspace' => $this->mTitle->canTalk() ? str_replace('_',' ',$this->mTitle->getTalkNsText()) : '',
+				'talkspacee' => $this->mTitle->canTalk() ? wfUrlencode( $this->mTitle->getTalkNsText() ) : '',
+				'subjectspace' => $this->mTitle->getSubjectNsText(),
+				'subjectspacee' =>wfUrlencode( $this->mTitle->getSubjectNsText() ),
+				'currentdayname' => $wgContLang->getWeekdayName( gmdate( 'w', $ts ) + 1 ),
+				'currentyear' => $wgContLang->formatNum( gmdate( 'Y', $ts ), true ),
+				'currenttime' => $wgContLang->time( wfTimestamp( TS_MW, $ts ), false, false ),
+				'currenthour' => $wgContLang->formatNum( gmdate( 'H', $ts ), true ),
+				'currentweek'=> $wgContLang->formatNum( (int)gmdate( 'W', $ts ) ),
+				'currentdow'=>$wgContLang->formatNum( gmdate( 'w', $ts ) ),
+				'localdayname'=> $wgContLang->getWeekdayName( $localDayOfWeek + 1 ),
+				'localyear' => $wgContLang->formatNum( $localYear, true ),
+				'localtime' => $wgContLang->time( $localTimestamp, false, false ),
+				'localhour' => $wgContLang->formatNum( $localHour, true ),
+				'localweek' => $wgContLang->formatNum( (int)$localWeek ),
+				'localdow' =>$wgContLang->formatNum( $localDayOfWeek ),
+				'numberofarticles' => $wgContLang->formatNum( SiteStats::articles() ), //SiteStats:Static accessor class for site_stats and related things.[mediawiki.org]
+				'numberoffiles' =>$wgContLang->formatNum( SiteStats::images() ),
+				'numberofusers' => $wgContLang->formatNum( SiteStats::users() ),
+				'numberofpages' => $wgContLang->formatNum( SiteStats::pages() ),
+				'numberofedits' =>$wgContLang->formatNum( SiteStats::edits() ),
+				'currenttimestamp' => wfTimestampNow(),
+				'localtimestamp' => $localTimestamp,
+				'currentversion' => SpecialVersion::getVersion(),
+				'sitename' =>$wgSitename,
+				'server' => $wgServer,
+				'servername' => $wgServerName,
+				'scriptpath' =>$wgScriptPath,
+				'directionmark' => $wgContLang->getDirMark(),
+				'contentlanguage' => $wgContLanguageCode
+		);
+		
+		// These are a bit more complicated...
+		//case 'talkpagename':
+		if( $this->mTitle->canTalk() ) {
+				$talkPage = $this->mTitle->getTalkPage(); //Get a Title object associated with the talk page of this article.[mediawiki.org]
+				
+				//getPrefixedText:Get the prefixed title with spaces. This is the form usually used for display.[mediawiki.org]
+				$talkpagename =  wfEscapeWikiText( $talkPage->getPrefixedText() ); 
+		} else {
+				$talkpagename =  '';
+		}
+		$w2lVars['talkpagename'] = $talkpagename;
 
-                // some simpler ones...
+		//case 'talkpagenamee':
+		if( $this->mTitle->canTalk() ) {
+				$talkPage = $this->mTitle->getTalkPage();
+				$talkpagenamee =  $talkPage->getPrefixedUrl();
+		} else {
+				$talkpagenamee =  '';
+		}
+		$w2lVars['talkpagenamee'] = $talkpagenamee;
 
-                $w2lVars = array(
-                        'currentmonth' =>  $wgContLang->formatNum( gmdate( 'm', $ts ) ),
-                        'currentmonthname' => $wgContLang->getMonthName( gmdate( 'n', $ts ) ),
-                        'currentmonthnamegen'=> $wgContLang->getMonthNameGen( gmdate( 'n', $ts ) ),
-                        'currentmonthabbrev'=> $wgContLang->getMonthAbbreviation( gmdate( 'n', $ts ) ),
-                        'currentday'=> $wgContLang->formatNum( gmdate( 'j', $ts ) ),
-                        'currentday2'=> $wgContLang->formatNum( gmdate( 'd', $ts ) ),
-                        'localmonth'=>$wgContLang->formatNum( $localMonth ),
-                        'localmonthname' => $wgContLang->getMonthName( $localMonthName ),
-                        'localmonthnamegen'=> $wgContLang->getMonthNameGen( $localMonthName ),
-                        'localmonthabbrev'=> $wgContLang->getMonthAbbreviation( $localMonthName ),
-                        'localday'=> $wgContLang->formatNum( $localDay ),
-                        'localday2' => $wgContLang->formatNum( $localDay2 ),
-                        'pagename' => wfEscapeWikiText( $this->mTitle->getText() ),
-                        'pagenamee'=>$this->mTitle->getPartialURL(),
-                        'fullpagename' =>wfEscapeWikiText( $this->mTitle->getPrefixedText() ),
-                        'fullpagenamee' => $this->mTitle->getPrefixedURL(),
-                        'subpagename' => wfEscapeWikiText( $this->mTitle->getSubpageText() ),
-                        'subpagenamee' => $this->mTitle->getSubpageUrlForm(),
-                        'basepagename' => wfEscapeWikiText( $this->mTitle->getBaseText() ),
-                        'basepagenamee' => wfUrlEncode( str_replace( ' ', '_', $this->mTitle->getBaseText() ) ),
-                        'revisionid' => $this->mRevisionId,
-                        'revisionday' => intval( substr( $this->getRevisionTimestamp(), 6, 2 ) ),
-                        'revisionday2' => substr( $this->getRevisionTimestamp(), 6, 2 ),
-                        'revisionmonth' => intval( substr( $this->getRevisionTimestamp(), 4, 2 ) ),
-                        'revisionyear' => substr( $this->getRevisionTimestamp(), 0, 4 ),
-                        'revisiontimestamp' => $this->getRevisionTimestamp(),
-                        'namespace' => str_replace('_',' ',$wgContLang->getNsText( $this->mTitle->getNamespace() ) ),
-                        'namespacee' => wfUrlencode( $wgContLang->getNsText( $this->mTitle->getNamespace() ) ),
-                        'talkspace' => $this->mTitle->canTalk() ? str_replace('_',' ',$this->mTitle->getTalkNsText()) : '',
-                        'talkspacee' => $this->mTitle->canTalk() ? wfUrlencode( $this->mTitle->getTalkNsText() ) : '',
-                        'subjectspace' => $this->mTitle->getSubjectNsText(),
-                        'subjectspacee' =>wfUrlencode( $this->mTitle->getSubjectNsText() ),
-                        'currentdayname' => $wgContLang->getWeekdayName( gmdate( 'w', $ts ) + 1 ),
-                        'currentyear' => $wgContLang->formatNum( gmdate( 'Y', $ts ), true ),
-                        'currenttime' => $wgContLang->time( wfTimestamp( TS_MW, $ts ), false, false ),
-                        'currenthour' => $wgContLang->formatNum( gmdate( 'H', $ts ), true ),
-                        'currentweek'=> $wgContLang->formatNum( (int)gmdate( 'W', $ts ) ),
-                        'currentdow'=>$wgContLang->formatNum( gmdate( 'w', $ts ) ),
-                        'localdayname'=> $wgContLang->getWeekdayName( $localDayOfWeek + 1 ),
-                        'localyear' => $wgContLang->formatNum( $localYear, true ),
-                        'localtime' => $wgContLang->time( $localTimestamp, false, false ),
-                        'localhour' => $wgContLang->formatNum( $localHour, true ),
-                        'localweek' => $wgContLang->formatNum( (int)$localWeek ),
-                        'localdow' =>$wgContLang->formatNum( $localDayOfWeek ),
-                        'numberofarticles' => $wgContLang->formatNum( SiteStats::articles() ),
-                        'numberoffiles' =>$wgContLang->formatNum( SiteStats::images() ),
-                        'numberofusers' => $wgContLang->formatNum( SiteStats::users() ),
-                        'numberofpages' => $wgContLang->formatNum( SiteStats::pages() ),
-                        'numberofedits' =>$wgContLang->formatNum( SiteStats::edits() ),
-                        'currenttimestamp' => wfTimestampNow(),
-                        'localtimestamp' => $localTimestamp,
-                        'currentversion' => SpecialVersion::getVersion(),
-                        'sitename' =>$wgSitename,
-                        'server' => $wgServer,
-                        'servername' => $wgServerName,
-                        'scriptpath' =>$wgScriptPath,
-                        'directionmark' => $wgContLang->getDirMark(),
-                        'contentlanguage' => $wgContLanguageCode
-                );
-                
-                // These are a bit more complicated...
-                //case 'talkpagename':
-                if( $this->mTitle->canTalk() ) {
-                        $talkPage = $this->mTitle->getTalkPage();
-                        $talkpagename =  wfEscapeWikiText( $talkPage->getPrefixedText() );
-                } else {
-                        $talkpagename =  '';
-                }
-                $w2lVars['talkpagename'] = $talkpagename;
-
-                //case 'talkpagenamee':
-                if( $this->mTitle->canTalk() ) {
-                        $talkPage = $this->mTitle->getTalkPage();
-                        $talkpagenamee =  $talkPage->getPrefixedUrl();
-                } else {
-                        $talkpagenamee =  '';
-                }
-                $w2lVars['talkpagenamee'] = $talkpagenamee;
-
-                //case 'subjectpagename':
-                $subjPage = $this->mTitle->getSubjectPage();
-                $w2lVars['subjectpagename'] =  wfEscapeWikiText( $subjPage->getPrefixedText() );
-                $w2lVars['subjectpagenamee'] = $subjPage->getPrefixedUrl();
-                
-                wfRunHooks('w2lTemplateVars', array(&$this, &$w2lVars) );
-                
-                $w2lVars = array_change_key_case($w2lVars, CASE_UPPER);
-                
-                return $w2lVars;
-        }
+		//case 'subjectpagename':
+		$subjPage = $this->mTitle->getSubjectPage();
+		$w2lVars['subjectpagename'] =  wfEscapeWikiText( $subjPage->getPrefixedText() );
+		$w2lVars['subjectpagenamee'] = $subjPage->getPrefixedUrl();
+		
+		wfRunHooks('w2lTemplateVars', array(&$this, &$w2lVars) );
+		
+		$w2lVars = array_change_key_case($w2lVars, CASE_UPPER);
+		
+		return $w2lVars;
+	}
 
 	function getRevisionTimestamp() {
 		// At this point, we're dealing only with current articles.
@@ -644,12 +666,16 @@ class Wiki2LaTeXCore {
 		// Required for prepareVariables
 		return $this->mArticle->getTimestamp();
 	}
-
+/**
+ * Get Template files content
+ *
+ * @return array file name => file content
+ */
 	public function createTemplateFiles($template) {
 		// extract all the files, which are in it
 		// AND: All the files, that need to be stripped out of other pages...
 		// required latexfiles:
-		$other_files = $this->getTagContents($template, 'latexpage');
+		$other_files = $this->getTagContents($template, 'latexpage'); //???When is it used??
 
 		$template = ' '.$template;
 		$template_sec = explode('<latexfile name="', $template);
@@ -657,7 +683,7 @@ class Wiki2LaTeXCore {
 		array_shift($template_sec);
 		$files = array();
 
-		// die anderen Dateien
+		// other files
 		foreach ($other_files as $file) {
 			$file_content = $this->getWiki($file);
 			$tmp_content = $this->getTagContents($file_content, "latex");
@@ -666,7 +692,7 @@ class Wiki2LaTeXCore {
 			$files[$file_name] = trim($tmp_content[0]);
 		}
 
-		// Die Dateien aus dem Template
+		// The files from the template
 		foreach ($template_sec as $file_info) {
 			$file = explode('">', $file_info,2);
 			$file_name = $file[0].".tex";
@@ -698,7 +724,9 @@ class Wiki2LaTeXCore {
 		$this->parserParams[] = $urlname;
 		return true;
 	}
-
+/**
+ * Get the content between <$tag> & </$tag>
+ */
 	public function getTagContents($string, $tag) {
 		$string = " ".$string;
 		$open_tag = "<".$tag.">";
@@ -714,35 +742,40 @@ class Wiki2LaTeXCore {
 		return $tags;
 	}
 
-        private function getStatusMessage($msg, $success = true) {
-                // Show a message, if form os called by a redirect from deleting all temp-files
-                $output = '';
-                if ( $success == true ) {
-                        $output = "\n".'<div onclick="this.style.display=\'none\'" style="text-align:center;border:1px solid black; background-color:#3c6; padding:5px; margin:5px;">';
-                        $output .= $msg;
-                        $output .= '</div>';
-                } elseif ( $success == false ) {
-                        $output = '<div onclick="this.style.display=\'none\'" style="text-align:center;border:1px solid black; background-color:#c33; padding:5px; margin:5px;">';
-                        $output .=  $msg ;
-                        $output .= '</div>';
-                } else {
-                        $output = '<div onclick="this.style.display=\'none\'" style="text-align:center;border:1px solid black; background-color:'.$success.'; padding:5px; margin:5px;">';
-                        $output .= $msg;
-                        $output .= '</div>';
-                }
-                return $output;
-        }
-
+	private function getStatusMessage($msg, $success = true) {
+		// Show a message, if form os called by a redirect from deleting all temp-files
+		$output = '';
+		if ( $success == true ) {
+				$output = "\n".'<div onclick="this.style.display=\'none\'" style="text-align:center;border:1px solid black; background-color:#3c6; padding:5px; margin:5px;">';
+				$output .= $msg;
+				$output .= '</div>';
+		} elseif ( $success == false ) {
+				$output = '<div onclick="this.style.display=\'none\'" style="text-align:center;border:1px solid black; background-color:#c33; padding:5px; margin:5px;">';
+				$output .=  $msg ;
+				$output .= '</div>';
+		} else {
+				$output = '<div onclick="this.style.display=\'none\'" style="text-align:center;border:1px solid black; background-color:'.$success.'; padding:5px; margin:5px;">';
+				$output .= $msg;
+				$output .= '</div>';
+		}
+		return $output;
+	}
+/**
+ * Get the template written on the wiki from the id of the article.
+ */
 	public function getTemplate($id) {
 		$title = Title::newFromID( $id );
-		if ( !$title->UserCanRead() ) {
+		if ( !$title->UserCanRead() ) { //check if user can read
 			return '';
 		}
+		//retrieve template content
 		$rev  = new Article( $title, 0 );
 		$text  = $rev->getContent();
 		return $text;
 	}
-
+/** 
+ * Get wiki article content from the title of the article.
+ */
 	public function getWiki($title_str) {
 		$title = Title::newFromText( $title_str );
 		if ( !$title->UserCanRead() ) {
@@ -752,7 +785,9 @@ class Wiki2LaTeXCore {
 		$text  = $rev->getContent();
 		return $text;
 	}
-
+/**
+ * Prepare the links at end of the box. Delete temporary data.
+ */
 	public function getFolderLinks() {
 		$output = '<div style="text-align:right;">';
 
@@ -761,7 +796,11 @@ class Wiki2LaTeXCore {
 		$output .= '</div>';
 		return $output;
 	}
-
+/**
+ * Generate a random name for a temporary directory.
+ * 
+ * @return string name of the directory
+ */
 	public function getTempDirPiece() {
 		return $piece = time()."-".rand();
 	}
