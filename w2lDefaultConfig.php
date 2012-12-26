@@ -40,6 +40,14 @@ include_once('contrib/pre.php');
 $w2lConfig['default_template'] = 'auto';
 
 $w2lConfig['docclass'] = 'article';
+
+/**
+ * $w2lConfig['process_curly_braces'] values:
+ *
+ *'0': remove everything between curly braces
+ *'1': do nothing
+ *'2': process them ((Wiki2LaTeXParser))
+ */
 $w2lConfig['process_curly_braces'] = '2';
 
 // This command should work. Before your try to enable pdfexport, please try this

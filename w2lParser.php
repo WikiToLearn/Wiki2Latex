@@ -194,6 +194,8 @@ class Wiki2LaTeXParser {
 
 		// First, strip out all comments...
 		wfRunHooks('w2lBeforeStrip', array( &$this, &$text ) );
+		
+		//again?? It has already been done in preprocessString
 		$text = $this->stripComments($text);
 		
 		wfRunHooks('w2lBeforeExpansion', array( &$this, &$text ) );
@@ -207,7 +209,7 @@ class Wiki2LaTeXParser {
 			case '2': // process them
 				$text = $this->processCurlyBraces($text);
 			break;
-			default:
+			default: //default: do nothing
 			break;
 		}
 
@@ -588,14 +590,20 @@ class Wiki2LaTeXParser {
 	}
 /**
  * Callback for matchNoWiki replace.
+ * 
+ * Replace special chars found between <nowiki></nowiki>
  */
 	function noWikiMarker($match) {
 		++$this->nowikiCounter;
 		//get a nowikiMarker
 		$marker = $this->getMark('nowiki', $this->nowikiCounter);
+		//series of substitutions
 		$str = $this->maskLatexCommandChars($match[1]);
+
 		$str = $this->maskLatexSpecialChars($str);
+
 		$str = $this->maskMwSpecialChars($str);
+		//save marker=> content with all needed substitutions
 		$this->nowikiMarks[$marker] = $str;
 		return $marker;
 	}
@@ -605,20 +613,28 @@ class Wiki2LaTeXParser {
 		$str = strtr($str, $this->nowikiMarks);
 		return $str;
 	}
-
+/**
+ * Do string preprocessing: substitution between nowiki tags, stripping out comments and handling noinclude and includeonly content.
+ */
 	public function preprocessString($str) {
 		//$this->reportError(strlen($str), __METHOD__);
+		
+		//needed substitutions between <nowiki></nowiki>
 		$str = $this->matchNoWiki($str);
+
+		//strip out comments
 		$str = $this->stripComments($str);
+
 		//$this->reportError(strlen($str), __METHOD__);
 		if ( $this->getVal('leave_noinclude') ) {
+			//leave only the content, remove the tags. 
 			$str = preg_replace('/<noinclude>(.*)<\/noinclude>/smU', "$1", $str);
 			$this->setVal('leave_noinclude', false);
 		} else {
 			$str = preg_replace('/<noinclude>.*<\/noinclude>/smU', '', $str);
 		}
-
 		if ( $this->getVal('insert_includeonly') ) {
+			//leave only the content, remove the tags.
 			$str = preg_replace('/<includeonly>(.*)<\/includeonly>/smU', "$1", $str);
 		} else {
 			$str = preg_replace('/<includeonly>(.*)<\/includeonly>/smU', '', $str);
@@ -904,7 +920,9 @@ class Wiki2LaTeXParser {
 		}
 
 	}
-
+/**
+ * Add key=> value pair to varible mask_char.
+ */
 	function mask($key, $value) {
 		$this->mask_chars[$key] = $value;
 	}
@@ -1774,10 +1792,13 @@ class Wiki2LaTeXParser {
 
 		return $result;
 	}
+/** 
+ * Strips out Mediawiki-comments, which are in fact HTML comments 
+ */
 	private function stripComments( $text = '' ) {
 		$fName = __METHOD__;
 		$this->profileIn(__METHOD__);
-		/* strips out Mediawiki-comments, which are in fact HTML comments */
+
 		$mode = '';
     		// This approach is from mediawiki
 		while ( ($start = strpos($text, '<!--')) !== false ) {
@@ -1992,7 +2013,11 @@ class Wiki2LaTeXParser {
 		$this->profileOut($fName);
 		return $str;
 	}
-
+/**
+ * Create mask(& substitution) for chars which are important for latex commands: // {,},\,&.
+ * 
+ * It seems supposed that those chars should be in wiki text. No meaning from context.
+ */
 	public function maskLatexCommandChars($str) {
 		$fName = __METHOD__;
 		$this->profileIn($fName);
@@ -2005,7 +2030,7 @@ class Wiki2LaTeXParser {
 		$this->Et = $this->getMark("Et");
 		$this->specialChars['backslash'] = $this->getMark('backslash');
 		
-		$this->mask($this->Et, '\&');
+		$this->mask($this->Et, '\&');//??
 		$this->mask($this->specialChars['backslash'], '\\textbackslash ');
 		
 		$chars = array(
@@ -2014,11 +2039,15 @@ class Wiki2LaTeXParser {
 	//		"}" => "\}",
 			'&' => $this->Et,
 		);
+		//substitute special latex chars with the corresponding marker.
 		$str = strtr($str, $chars);
+
 		$this->profileOut($fName);
 		return $str;
 	}
-
+/**
+ * Create mask(& substitution) for special mediawiki chars: // # * (others are ignored)
+ */ 
 	public function maskMwSpecialChars($str) {
 		$fName = __METHOD__;
 		$this->profileIn($fName);
@@ -2032,7 +2061,9 @@ class Wiki2LaTeXParser {
 		$this->profileOut($fName);
 		return $str;
 	}
-
+/**
+ * Create mask(& substitution) for special latex chars: // _ % $
+ */ 
 	public function maskLatexSpecialChars($str) {
 		$fName = __METHOD__;
 		$this->profileIn($fName);
@@ -2066,7 +2097,9 @@ class Wiki2LaTeXParser {
 		$this->profileOut($fName);
 		return $marker;
 	}
-
+/**
+ * This function processes all templates, variables and parserfunctions.
+ */
 	public function processCurlyBraces($str) {
 		$fName = __METHOD__;
 		$this->profileIn($fName);
@@ -2078,18 +2111,20 @@ class Wiki2LaTeXParser {
 		++$this->curlyBraceDebugCounter;
 		$this->curlyBraceLength = $this->curlyBraceLength + strlen($str);
 		//$this->reportError($str, __METHOD__);
+		
 		// This function processes all templates, variables and parserfunctions
-		$marker = $this->getMark('pipe');// $this->uniqueString();
+		$marker = $this->getMark('pipe');
+		
 		//$str = preg_replace('/\[\[(.*)\|(.*)\]\]/U', '[[$1'.$marker.'$2]]', $str);
 		$test = $this->split_str($str);
-
+		
 		foreach($test as $part) {
 			// if first
 			if (substr($part, 0,2 ) == '{{' ) {
 				//$part = preg_replace('/\[\[(.*)\|(.*)\]\]/U', '[[$1'.$marker.'$2]]', $part);
 
-				$match[0] = $part;
-				$match[1] = substr($part, 2, -2);
+				$match[0] = $part; 
+				$match[1] = substr($part, 2, -2); //content between {{ and }}
 				//$this->reportError($match[0], __METHOD__);#
 				//$this->reportError($match[1], __METHOD__);#
 
@@ -2109,13 +2144,12 @@ class Wiki2LaTeXParser {
 	}
 
 	private function doCurlyBraces($matches) {
-		$orig  = $matches[0];
+		$orig  = $matches[0]; //original , with {{ and }}
 		$match = $matches[1];
 		//$this->reportError($match, __METHOD__);
 		$args = array();
 		//$match = strtr($match, array("\n"=>""));
 		$match = trim($match);
-
 
 		// new
 		if ( substr_count($match, '|') !== 0 ) {
@@ -2286,7 +2320,9 @@ class Wiki2LaTeXParser {
 		}
 
 	}
-
+/**
+ * Split string into blocks. { and } open and close the blocks.
+ */
 	private function split_str($str) {
 		//
 		$table_open_mark  = $this->getMark('table-open');
@@ -2298,19 +2334,20 @@ class Wiki2LaTeXParser {
 		$before_last_char = '';
 		$last_char = '';
 		$cur_char = '';
-		$cb_counter = 0;
+		$cb_counter = 0; //?current block counter?
 		$char_counter = 0;
 		$split_array = array();
 		$block = 0;
 		$split_array[$block] = '';
 		$in_block = false;
 
-		$tmp_char = str_split($str);
-
+		$tmp_char = str_split($str); //convert string into array
+		
+		//split string in block: { -> open block, } ->close block
+		//note that tables are ignored
 		foreach($tmp_char as $cur_char) {
 			//
 			//$cur_char = $str{$char_counter};
-
 			switch ($cur_char) {
 				case '{':
 					++$cb_counter;
@@ -2350,7 +2387,7 @@ class Wiki2LaTeXParser {
 		//		break;
 			//}
 		}
-
+		//restore open/close mediawiki markers for table.
 		foreach ($split_array as $key => $value) {
 	  		$value = str_replace( $table_open_mark,"\n{|", $value);
 	  		$value = str_replace( $table_close_mark, "|}\n", $value);
@@ -2384,7 +2421,9 @@ class Wiki2LaTeXParser {
 		
 		return $text;
 	}
-	
+/** 
+ * check if $str is a w2l identifier
+ */ 
 	public function checkIdentifier($str) {
 		$str = trim($str);
 		if ( array_key_exists($str, $this->mw_vars) )
