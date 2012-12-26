@@ -9,3 +9,4 @@ TODO:
 Notes on Parser:
 - maskLatexCommandChars: is str_replace correct??
 - maybe the 'insert_includeonly' and 'leave_noinclude' config values should be user defined, now their values are defined in the class itself.
+- HORRIBLE HACK in Wiki2LaTeXParser::doCurlyBraces() fix it.

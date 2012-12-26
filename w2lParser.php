@@ -144,7 +144,9 @@ class Wiki2LaTeXParser {
 		$this->profileOut($fName);
 		return $str;
 	}
-
+/**
+ * Tags callback are defined in w2lTags.php.
+ */
 	public function addTagCallback($tag, $callback) {
 		$this->tags[$tag] = $callback;
 		$this->elements[] = $tag;
@@ -203,14 +205,17 @@ class Wiki2LaTeXParser {
 		switch ( $this->getVal('process_curly_braces') ) {
 			case '0': // remove everything between curly braces
 				$text = preg_replace('/\{\{(.*?)\}\}/sm', '', $text);
-			break;
-			case '1': // do nothing
-			break;
-			case '2': // process them
+				break;
+			case '1': 
+				// do nothing
+				break;
+			case '2': 
+				// process them
 				$text = $this->processCurlyBraces($text);
-			break;
-			default: //default: do nothing
-			break;
+				break;
+			default: 
+				//default: do nothing
+				break;
 		}
 
 		wfRunHooks('w2lBeginParse', array( &$this, &$text ) ); // run them again: maybe curly brackets have shown sth
@@ -234,6 +239,7 @@ class Wiki2LaTeXParser {
 		$text = $this->replacePre($text);
 		$text = $this->replaceParserExtensions($text);
 		$text = $this->replaceNoWikiMarkers($text);
+		
 		$text = $this->deMask($text);
 		//$text = $this->replacePre($text);
 		$text = trim($text);
@@ -296,11 +302,11 @@ class Wiki2LaTeXParser {
 
 		return $str;
 	}
-
+/**
+ * Used for parsing the string as is, without comments, extension-tags, etc.
+ */
 	function internalParse($str) {
 		$this->profileIn(__METHOD__);
-
-		// Used for parsing the string as is, without comments, extension-tags, etc.
 
 		//$str = $this->doSimpleReplace($str);
 		
@@ -474,7 +480,15 @@ class Wiki2LaTeXParser {
 		$this->profileOut($fName);
 		return;
 	}
-	
+/**
+ * Substitute special chars:  
+ * $chars = array(
+			"…"=>"{\dots}",
+			"…"=>"{\dots}",
+			'~'=> '\(\sim\)',
+			'€'=> '{\euro}',
+		);
+ */
 	function doSpecialChars($str) {
 
 		$chars = array(
@@ -1200,14 +1214,18 @@ class Wiki2LaTeXParser {
 			$this->mask($mask_com,   '\href');
 		}
 		return $link;
-	}
+	}	
+/**
+ * Extract w2l handled tag and parse them. For a list of to-be-parsed tag look at w2lTags.php
+ */
 	private function extractParserExtensions( $str = '' ) {
 		$fName = __METHOD__;
 		$this->profileIn($fName);
 		$matches = array();
 		$unique  = 'W2l-'.$this->uniqueString();
 		//$unique .=
-
+		
+		// Note: matches is passed as a pointer.
 		$str = $this->extractTagsAndParams($this->elements, $str, $matches, $unique);
 
 		// second: Some other aspects...
@@ -1234,7 +1252,11 @@ class Wiki2LaTeXParser {
 		$this->profileOut($fName);
 		return $str;
 	}
-
+/**
+ * Extract from tags content, attributes.
+ *  
+ * @param elements list of tag
+ */
 	private function extractTagsAndParams($elements, $text, &$matches, $uniq_prefix = ''){
 		static $n = 1;
 		$stripped = '';
@@ -1274,6 +1296,7 @@ class Wiki2LaTeXParser {
 				$tail = null;
 			} else {
 				if( $element == '!--' ) {
+				   // Comment
 					$end = '/(-->)/';
 				} else {
 					$end = "/(<\\/$element\\s*>)/i";
@@ -2034,9 +2057,9 @@ class Wiki2LaTeXParser {
 		$this->mask($this->specialChars['backslash'], '\\textbackslash ');
 		
 		$chars = array(
-	//		'\\' => $this->specialChars['backslash'],
-	//		"{" => "\{",
-	//		"}" => "\}",
+			'\\' => $this->specialChars['backslash'],
+			"{" => "\{",
+			"}" => "\}",
 			'&' => $this->Et,
 		);
 		//substitute special latex chars with the corresponding marker.
@@ -2099,6 +2122,8 @@ class Wiki2LaTeXParser {
 	}
 /**
  * This function processes all templates, variables and parserfunctions.
+ * 
+ * @return $str after process all curly braces: linked content is retrieved and added to the text of the page.
  */
 	public function processCurlyBraces($str) {
 		$fName = __METHOD__;
@@ -2142,7 +2167,11 @@ class Wiki2LaTeXParser {
 		$this->profileOut($fName);
 		return $new_str;
 	}
-
+/**
+ * Process argument string found between curly braces.
+ * 
+ * @return string ??Retrieved content linked between curly braces??.
+ */
 	private function doCurlyBraces($matches) {
 		$orig  = $matches[0]; //original , with {{ and }}
 		$match = $matches[1];
@@ -2165,7 +2194,7 @@ class Wiki2LaTeXParser {
 		//$this->reportError($identifier."->".$type, __METHOD__);
 		switch ($type) {
 			case W2L_TEMPLATE:
-				if ( '' == $args ) {
+				if ( $args == '' ) {
 					// no arguments
 					$args = array();
 				}
@@ -2182,7 +2211,7 @@ class Wiki2LaTeXParser {
 			break;
 			case W2L_PARSERFUNCTION:
 				$identifier = substr($identifier, 1);
-				// Now falling through, as the code ist the same now:
+				// Now falling through, as the code is the same now:
 			case W2L_COREPARSERFUNCTION:
 				$fnc = explode(':', $identifier, 2);
 				$expr = $fnc[1];
@@ -2202,7 +2231,8 @@ class Wiki2LaTeXParser {
 			break;
 			case W2L_TRANSCLUSION:
 				if ( '' == $args ) {
-					// Not sure, why this has been introduced. Commenting out the arrayx-fication, for this causes a warning...
+					// Not sure, why this has been introduced.
+					//  Commenting out the arrayx-fication, for this causes a warning...
 					// no arguments
 					$args = array();
 				}
@@ -2239,7 +2269,11 @@ class Wiki2LaTeXParser {
 		}
 		return trim($tmp);
 	}
-
+/**
+ * Process argument string found between curly braces.
+ * 
+ * @return array paramName=>paramValue
+ */
 	private function processArgString($str) {
 		$args = array();
 		$tmp = array();
@@ -2263,20 +2297,26 @@ class Wiki2LaTeXParser {
 			}
 		}
 
-
 		return $args;
 	}
-
+/**
+ * Process w2l Template variables.
+ */
 	private function processTemplateVariables($str, $args = array()) {
 		// replace the content by the args...
 		$this->templateVars = array();
 		$this->templateVars = $args;
 		$str = preg_replace_callback('/\{\{\{(.*?)\}\}\}/sm', array($this, 'doTemplateVariables'), $str);
+		
 		$chars = array('{{{'=>'\{\{\{', '}}}' => '\}\}\}');
 		$str = strtr($str, $chars);
+		
 		unset($this->templateVars);
 		return $str;
 	}
+/**
+ * Replace content of template vars. Callback.
+ */
 	private function doTemplateVariables($match) {
 		// replace the content by the args...
 
@@ -2396,7 +2436,9 @@ class Wiki2LaTeXParser {
 
 		return $new_split;
 	}
-
+/**
+ * Get content of a Wiki article given its title string.
+ */
 	public function getContentByTitle( $title_str , $namespace = NS_MAIN) {
 		$title_str =  trim($title_str);
 
@@ -2409,6 +2451,7 @@ class Wiki2LaTeXParser {
 		}
 		
 		if ( !$title->UserCanRead() ) {
+			//no content if user can't read
 			return '';
 		}
 		
@@ -2417,12 +2460,13 @@ class Wiki2LaTeXParser {
 			$text = $rev->getContent();
 		} else {
 			$text = $title_str;
-		}
-		
+		}	
 		return $text;
 	}
 /** 
- * check if $str is a w2l identifier
+ * Check if $str is a w2l identifier.
+ * 
+ * # and : have a special meaning?
  */ 
 	public function checkIdentifier($str) {
 		$str = trim($str);
