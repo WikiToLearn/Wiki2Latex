@@ -1,11 +1,12 @@
 Wiki2LaTeX - WikiFM mod
 =======================
 
-w2l is thought to elaborate wiki pages which do not contains LaTeX code. Now, in wikifm.org we use LaTeX code: this generates lots of bugs. Fortunately all LaTeX code is used inside specif tag:
+w2l is thought to elaborate wiki pages which do not contain LaTeX code. Now, in wikifm.org we use LaTeX code: this generates lots of bugs. Fortunately all LaTeX code is used inside specific tags:
 * \begin{equation} <-> \end{equation}
 * $$ <-> $$
 * <math> <-> </math> (for inline code)
 * others??
+
 Our purpose is, simply, to avoid w2l to run on this code and copy and paste it, as it is, in the .tex file.
 
 The idea is to mask LaTeX code before the Parser acts on it, in this way contents will be skipped by the other functions.
