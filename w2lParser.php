@@ -178,27 +178,24 @@ class Wiki2LaTeXParser {
 		/* parse a given wiki-string to latex */
 		/* if $transclusions is an array, then all transcluded files are in there */
 		$time_start = microtime(true);
-// 		print($text);
 
 		if ($this->initiated == false ) {
 			$this->initParsing();
 		}
 		$this->mTitle =& $title;
-// 		echo '<br />After initParsing:';print($text);
+
 		$text = trim($text);
 		$text = "\n".$text."\n";
 		
+		// wikiFM Mod - All LaTeX code in the page is masked to avoid Parser to run on it.
 		$text = $this->processPageLatexCode($text);
-// 		echo '<br />';print($text);
 		
 		wfRunHooks('w2lBeginParse', array( &$this, &$text ) ); //This hook call something, discover it!
-// 		echo '<br />After hooks1:';print($text);
+
 		wfRunHooks('w2lBeforeCut', array( &$this, &$text ) );
-// 		echo '<br />After hooks2:';print($text);
-		//start wikifm mod
 		
 		$text = $this->preprocessString($text);
-// 		echo '<br />';print($text);die();
+
 		// First, strip out all comments...
 		wfRunHooks('w2lBeforeStrip', array( &$this, &$text ) );
 		
@@ -259,10 +256,18 @@ class Wiki2LaTeXParser {
 /**
  * Get all LaTeX code written in the page between special tags and remove from parser action.
  * 
- * Start with text between \begin{equation} and \end{equation}
+ * Start with text between <math> & </math>, then between \begin{equation} and \end{equation}.
+ * Environ with * o not are correctly recognized. (ie \begin{equation*}...). 
+ * 
+ * This function masks LaTeX text: it catches the tags and replace the whole LaTeX code with a
+ * generated marker.
+ * 
+ * @todo enable recognition of other environ: multiline, split, gather.
+ * 
  * @author Alberto Giudici
+ * @date Dec 2012
  * @version 0.1
- * @return formatted text
+ * @return parsed text
  */
 	function processPageLatexCode($pageText){
 		$fName = __METHOD__;
@@ -273,28 +278,30 @@ class Wiki2LaTeXParser {
 		$reMath = '/<(\s*math\s*)\b[^>]*>(.*?)<\/\1\s*>/';
 		//do the replacing
   		$pageText = preg_replace_callback( $reMath, array($this,'maskLatexCodeInline'), $pageText);
-
+		
+		//now consider LaTeX environs
 		$pageText = $this->maskLatexCodeEquation($pageText);
-// 		$pageText = preg_replace_callback( $reEquation, array($this,'maskLatexCodeEquation'), $pageText);
+
 		$this->profileOut($fName);
 		return $pageText;
 	}
 /**
- * Replace
+ * maskLatexCodeEquation masks LaTeX text between special tags.
  * 
- * Start with text between \begin{equation} and \end{equation} and $$ $$
+ * Start with text between \begin{equation} and \end{equation} and $$ $$.
  * @author Alberto Giudici
  * @version 0.1
- * 
+ * @return text with masked contents
  */
 	public function maskLatexCodeEquation($pageText){
-		
+	
+		// start with \begin{equation} <-> \end{equation}
 		$startSplitted = preg_split('/(\\\\begin\{equation\*?\})/',$pageText,0, PREG_SPLIT_DELIM_CAPTURE );
 		
 		array_shift($startSplitted);
 		for ($i=0;  $i < count($startSplitted);$i+=2){
 			$beginEnviron = $startSplitted[$i];//get \begin{equation\*?}
-			//print($beginEnviron);die();
+			
 			$endSplitted = preg_split('/(\\\\end\{equation\*?\})/',$startSplitted[$i+1],0, PREG_SPLIT_DELIM_CAPTURE);
 			
 			$content = $endSplitted[0];
@@ -307,7 +314,8 @@ class Wiki2LaTeXParser {
 			$pageText = str_replace($all, $equationMk, $pageText);
 		}
 		
-
+		//now $$ <-> $$
+		
 		$startSplitted = explode('$$',$pageText);
 		
 		array_shift($startSplitted);
@@ -326,6 +334,11 @@ class Wiki2LaTeXParser {
 	}
 /**
  * Callback for <math></math> substitution.
+ * 
+ * Start with text between \begin{equation} and \end{equation} and $$ $$.
+ * @author Alberto Giudici
+ * @version 0.1
+ * @return text with masked contents
  */
 	public function maskLatexCodeInline($match){
 		$inlineMk = $this->getMark('latex-code-inline');
