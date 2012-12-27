@@ -1,7 +1,7 @@
 Wiki2LaTeX - WikiFM mod
 =======================
 
-w2l is though to elaborate wiki pages which do not contains LaTeX code. Now, in wikifm.org we use LaTeX code: this generates lots of bugs. Fortunately all LaTeX code is used inside specif tag:
+w2l is thought to elaborate wiki pages which do not contains LaTeX code. Now, in wikifm.org we use LaTeX code: this generates lots of bugs. Fortunately all LaTeX code is used inside specif tag:
 * \begin{equation} <-> \end{equation}
 * $$ <-> $$
 * <math> <-> </math> (for inline code)
