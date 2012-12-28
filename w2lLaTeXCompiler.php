@@ -30,8 +30,8 @@ class Wiki2LaTeXCompiler {
 		$this->bibtex  = $w2lConfig['ltx_bibtex'];
 		$this->repeat  = $w2lConfig['ltx_repeat'];
 
-		$this->piece   = $piece;
-		$this->path    = '';
+		$this->piece   = $piece;//name of the working (temporary) directory
+		$this->path    = ''; //path of the working directory
 		$this->mkdir   = $mkdir;
 		
 		$this->debug   = false;
@@ -51,6 +51,7 @@ class Wiki2LaTeXCompiler {
 		$tempdir .= DIRECTORY_SEPARATOR.'w2ltmp-'.$this->piece;
 		$this->path = $tempdir;
 
+		//check whatever needed to work in the temp directory
 		if ( true == $this->mkdir ) {
 			if ( !@mkdir($this->path) ) {
 				$wgOut->addHTML( wfMsg('w2l_temp_dir_missing') );
@@ -66,14 +67,18 @@ class Wiki2LaTeXCompiler {
 
 		$cur_dir = getcwd();
 		chdir($tempdir);
-
+		/**
+		 * @todo Add multilanguage support for the next strings => DONE
+		 */
 		foreach( $this->files as $file_name => $file_content) {
 			$file_content = str_replace(array_keys($tpl_vars), array_values($tpl_vars), $file_content);
 			$failure = file_put_contents($file_name, $file_content);
 			if ( $failure !== false ) {
-				$msg .= 'Creating file '.$file_name.' with '.$failure.' Bytes'."\n";
+				$msg .= wfMsg('w2l_creating_file_success', $file_name,$failure);
+				//$msg .= 'Creating file '.$file_name.' with '..' Bytes'."\n"; //migliorare supporto linguistico qui
 			} else {
-				$msg .= 'Error creating file '.$file_name."\n";
+				$msg .= wfMsg('w2l_creating_file_error', $file_name,$failure);
+				//$msg .= 'Error creating file '.$file_name."\n";
 			}
 
 			chmod($file_name, 0666);
@@ -84,7 +89,8 @@ class Wiki2LaTeXCompiler {
 	}
 	
 	function runLaTeX( $file = 'Main', $sort = false, $bibtex = false ) {
-
+		
+		//complete the shell command
 		$command = str_replace('%file%', $file, $this->command);
 
 		$cur_dir = getcwd();
@@ -92,6 +98,7 @@ class Wiki2LaTeXCompiler {
 	
 		$go  = true;
 		$i   = 1;
+		//message with operation returning status
 		$msg  = $this->msg;
 		
 		$msg .= wfMsg('w2l_compile_command', $command )."\n";

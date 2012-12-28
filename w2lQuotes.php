@@ -1,8 +1,9 @@
 <?php
-/*
- *
- *Purpose: define di quoting characters
- *
+/**
+ * Purpose: define di quoting characters
+ * This code in included ONLY on Wiki2LaTeXParser.
+ * 
+ * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,6 +17,7 @@
 	echo $msg;
 	exit( 1 );
 }
+// $this->addChar('HTMLNAME', 'LATEXCOMAND' , UNICODE_DEC_NUMBER);
 
 switch ( $this->getVal('babel') ) {
 	case 'english':
