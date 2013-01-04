@@ -24,6 +24,7 @@ TODO:
 - Translate w2l messages in w2lMessages.php, translate in italian and restore english.
 - look at code:other things @todo are here.
 - Mediawiki TOC is simply ignored by w2l, what to do?
+- Check links.
 
 BUG:
 ----
