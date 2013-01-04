@@ -22,17 +22,21 @@ Notes:
 TODO:
 -----
 - Translate w2l messages in w2lMessages.php, translate in italian and restore english.
-- look at code:other things todo are here.
-
+- look at code:other things @todo are here.
+- Mediawiki TOC is simply ignored by w2l, what to do?
+BUG:
+----
+- verbatim before heading makes heading recognition fails.
 
 Notes on Parser:
 ----------------
 - maskLatexCommandChars: is str_replace correct??
 - maybe the 'insert_includeonly' and 'leave_noinclude' config values should be user defined, now their values are defined in the class itself.
 - __FIXED__ HORRIBLE HACK in Wiki2LaTeXParser::doCurlyBraces() fix it.
-
+- If you want to handle noinclude, includeonly, onlyinclude give a look at w2lParser::preprocessString();
 
 fixMainBug branch: KNOWN BUG
 -----------------------------
 - __FIXED__(now an empty space is left bewteen dollars)open and close <math></math> will produce $$, which is interpreted by LaTeX 
+- __FIXED__ LaTeX code in transcluded page is handled correctly.
 - act like other LaTeX code inside a wiki page for \begin{multline} \begin{align}

@@ -186,16 +186,12 @@ class Wiki2LaTeXParser {
 
 		$text = trim($text);
 		$text = "\n".$text."\n";
-		
-		// wikiFM Mod - All LaTeX code in the page is masked to avoid Parser to run on it.
-		$text = $this->processPageLatexCode($text);
-		
+	
+		$text = $this->preprocessString($text);
 		wfRunHooks('w2lBeginParse', array( &$this, &$text ) ); //This hook call something, discover it!
 
 		wfRunHooks('w2lBeforeCut', array( &$this, &$text ) );
 		
-		$text = $this->preprocessString($text);
-
 		// First, strip out all comments...
 		wfRunHooks('w2lBeforeStrip', array( &$this, &$text ) );
 		
@@ -343,7 +339,7 @@ class Wiki2LaTeXParser {
 	public function maskLatexCodeInline($match){
 		$inlineMk = $this->getMark('latex-code-inline');
 		if ($match[2] == ''){ //no content between <math></math>!
-			$match[2] = ' ';
+			$match[2] = ' '; //avoid $$ adding an empty space : $ $
 		}
 		$this->mask($inlineMk, "$".$match[2]."$");
 		return $inlineMk;
@@ -627,7 +623,6 @@ class Wiki2LaTeXParser {
 			// old code gives a notice on empty line:
 			$first_char = $this->getFirstChar($line);
 
-
 			$last_line = $pre_line;
 			if ( ' ' == $first_char ) {
 				if ($last_line == true) {
@@ -678,7 +673,7 @@ class Wiki2LaTeXParser {
 			//wfVarDump($work_line);
 			$final_str .= $work_line;
 		}
-		
+
 		//wfVarDump($preBlock);
 		$this->profileOut($fName);
 		return $final_str;
@@ -724,36 +719,42 @@ class Wiki2LaTeXParser {
 	}
 /**
  * Do string preprocessing: substitution between nowiki tags, stripping out comments and handling noinclude and includeonly content.
+ * @TODO correct the usage of noinclude and includeonly. 
+ *      The LaTeX page should be similar to what you see on the webpage.
+ * The processing of LaTeX code starts here.
  */
 	public function preprocessString($str) {
-		//$this->reportError(strlen($str), __METHOD__);
 		
+		// wikiFM Mod - All LaTeX code in the page is masked to avoid Parser to run on it.
+		$str = $this->processPageLatexCode($str);
+
 		//needed substitutions between <nowiki></nowiki>
 		$str = $this->matchNoWiki($str);
 
 		//strip out comments
 		$str = $this->stripComments($str);
 
-		//$this->reportError(strlen($str), __METHOD__);
 		if ( $this->getVal('leave_noinclude') ) {
 			//leave only the content, remove the tags. 
-			$str = preg_replace('/<noinclude>(.*)<\/noinclude>/smU', "$1", $str);
+			$str = preg_replace('/<(\\/)?noinclude>/smU', '', $str);
 			$this->setVal('leave_noinclude', false);
 		} else {
+			//remove everything
 			$str = preg_replace('/<noinclude>.*<\/noinclude>/smU', '', $str);
 		}
+
 		if ( $this->getVal('insert_includeonly') ) {
 			//leave only the content, remove the tags.
-			$str = preg_replace('/<includeonly>(.*)<\/includeonly>/smU', "$1", $str);
+			//OLD: $str = preg_replace('/<includeonly>(.*)<\/includeonly>/smU', "$1", $str);
+			 $str = preg_replace('/<(\\/)?includeonly>/smU', '', $str);
 		} else {
+			//remove everything
 			$str = preg_replace('/<includeonly>(.*)<\/includeonly>/smU', '', $str);
 			$this->setVal('insert_includeonly', true);
 		}
 
-		//$this->reportError(strlen($str), __METHOD__);
-
 		wfRunHooks('w2lPreProcess', array( &$this, &$str ) );
-		//$this->reportError(strlen($str), __METHOD__);
+
 		return $str;
 	}
 
