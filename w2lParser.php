@@ -658,7 +658,7 @@ class Wiki2LaTeXParser {
 					
 						//if ( $preBlock[$block_counter] ==  )
 						$marker = $this->getMark('pre', $block_counter);
-						$work_line = $marker.$work_line;
+						$work_line = $marker."\n".$work_line;
 						//wfVarDump($str);
 						//$str = str_replace($rplBlock[$block_counter], $marker, $str);
 						//wfVarDump($str);
