@@ -718,10 +718,12 @@ class Wiki2LaTeXParser {
 		return $str;
 	}
 /**
- * Do string preprocessing: substitution between nowiki tags, stripping out comments and handling noinclude and includeonly content.
+ * Do string preprocessing: substitution between nowiki tags, stripping out 
+ * comments and handling noinclude and includeonly content. Process the LaTeX
+ * code found in the page. The processing of LaTeX code starts here.
  * @TODO correct the usage of noinclude and includeonly. 
  *      The LaTeX page should be similar to what you see on the webpage.
- * The processing of LaTeX code starts here.
+ * @return processed string
  */
 	public function preprocessString($str) {
 		
@@ -2265,16 +2267,16 @@ class Wiki2LaTeXParser {
 		return $new_str;
 	}
 /**
- * Process argument string found between curly braces.
+ * Process argument strings found between curly braces.
  * 
- * @return string ??Retrieved content linked between curly braces??.
+ * @return string Retrieved content linked between curly braces
  */
 	private function doCurlyBraces($matches) {
 		$orig  = $matches[0]; //original , with {{ and }}
 		$match = $matches[1];
-		//$this->reportError($match, __METHOD__);
+
 		$args = array();
-		//$match = strtr($match, array("\n"=>""));
+
 		$match = trim($match);
 
 		// new
@@ -2288,7 +2290,7 @@ class Wiki2LaTeXParser {
 		}
 		$tmp = '';
 		$type = $this->checkIdentifier($identifier);
-		//$this->reportError($identifier."->".$type, __METHOD__);
+
 		switch ($type) {
 			case W2L_TEMPLATE:
 				if ( $args == '' ) {
@@ -2299,11 +2301,11 @@ class Wiki2LaTeXParser {
 				// check the name
 
 				$tmp = $this->getContentByTitle($identifier, NS_TEMPLATE);
-				//$this->reportError(strlen($tmp), __METHOD__);
+
 				$tmp = $this->preprocessString($tmp);
-				//$this->reportError(strlen($tmp), __METHOD__);
+
 				$tmp = $this->processTemplateVariables($tmp, $args);
-				//$this->reportError(strlen($tmp), __METHOD__);
+
 				$tmp = $this->processCurlyBraces($tmp);
 			break;
 			case W2L_PARSERFUNCTION:
@@ -2336,23 +2338,6 @@ class Wiki2LaTeXParser {
 				$title = substr($identifier, 1);
 				$args = $this->processArgString($args);
 				$tmp = $this->getContentByTitle($title);
-		// HORRIBLE HACK
-// 		$text = $tmp;
-//                 $text = str_replace(":<math>", "<math style=\"equation\">", $text);
-//                 $text = str_replace(": <math>", "<math style=\"equation\">", $text);
-// 
-//                 $text = str_replace("\\begin{equation}", "<math style=\"equation\">", $text);
-//                 $text = str_replace("\\end{equation}", "</math>", $text);
-//                 $text = str_replace("\\begin{multline}", "<math style=\"multline\">", $text);
-//                 $text = str_replace("\\end{multline}", "</math>", $text);
-//                 $text = str_replace("\\begin{gather}", "<math style=\"gather\">", $text);
-//                 $text = str_replace("\\end{gather}", "</math>", $text);
-//                 $text = str_replace("\\begin{align}", "<math style=\"align\">", $text);
-//                 $text = str_replace("\\end{align}", "</math>", $text);
-// 
-//                 $text = str_replace("\\begin{split}", "<math style=\"display\">i\begin{split}", $text);
-//                 $text = str_replace("\\end{split}", "\\end{split}</math>", $text);
-// 		$tmp = $text;
 				$tmp = $this->preprocessString($tmp);
 				$tmp = $this->processTemplateVariables($tmp, $args);
 				$tmp = $this->processCurlyBraces($tmp);
@@ -2366,6 +2351,7 @@ class Wiki2LaTeXParser {
 		}
 		return trim($tmp);
 	}
+
 /**
  * Process argument string found between curly braces.
  * 
@@ -2563,7 +2549,7 @@ class Wiki2LaTeXParser {
 /** 
  * Check if $str is a w2l identifier.
  * 
- * # and : have a special meaning?
+ * # and : have a special meaning? Yes: ':' is used for mediawiki transclusions
  */ 
 	public function checkIdentifier($str) {
 		$str = trim($str);
