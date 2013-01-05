@@ -144,7 +144,9 @@ class Wiki2LaTeXParser {
 		$this->profileOut($fName);
 		return $str;
 	}
-
+/**
+ * Tags callback are defined in w2lTags.php.
+ */
 	public function addTagCallback($tag, $callback) {
 		$this->tags[$tag] = $callback;
 		$this->elements[] = $tag;
@@ -177,7 +179,6 @@ class Wiki2LaTeXParser {
 		/* if $transclusions is an array, then all transcluded files are in there */
 		$time_start = microtime(true);
 
-
 		if ($this->initiated == false ) {
 			$this->initParsing();
 		}
@@ -185,13 +186,12 @@ class Wiki2LaTeXParser {
 
 		$text = trim($text);
 		$text = "\n".$text."\n";
-
-		wfRunHooks('w2lBeginParse', array( &$this, &$text ) );
+	
+		$text = $this->preprocessString($text);
+		wfRunHooks('w2lBeginParse', array( &$this, &$text ) ); //This hook call something, discover it!
 
 		wfRunHooks('w2lBeforeCut', array( &$this, &$text ) );
 		
-		$text = $this->preprocessString($text);
-
 		// First, strip out all comments...
 		wfRunHooks('w2lBeforeStrip', array( &$this, &$text ) );
 		
@@ -203,14 +203,17 @@ class Wiki2LaTeXParser {
 		switch ( $this->getVal('process_curly_braces') ) {
 			case '0': // remove everything between curly braces
 				$text = preg_replace('/\{\{(.*?)\}\}/sm', '', $text);
-			break;
-			case '1': // do nothing
-			break;
-			case '2': // process them
+				break;
+			case '1': 
+				// do nothing
+				break;
+			case '2': 
+				// process them
 				$text = $this->processCurlyBraces($text);
-			break;
-			default: //default: do nothing
-			break;
+				break;
+			default: 
+				//default: do nothing
+				break;
 		}
 
 		wfRunHooks('w2lBeginParse', array( &$this, &$text ) ); // run them again: maybe curly brackets have shown sth
@@ -234,6 +237,7 @@ class Wiki2LaTeXParser {
 		$text = $this->replacePre($text);
 		$text = $this->replaceParserExtensions($text);
 		$text = $this->replaceNoWikiMarkers($text);
+		
 		$text = $this->deMask($text);
 		//$text = $this->replacePre($text);
 		$text = trim($text);
@@ -244,6 +248,101 @@ class Wiki2LaTeXParser {
 		$this->parse_time = $time_end - $time_start;
 		$this->profileOut(__METHOD__);
 		return $text;
+	}
+/**
+ * Get all LaTeX code written in the page between special tags and remove from parser action.
+ * 
+ * Start with text between <math> & </math>, then between \begin{equation} and \end{equation}.
+ * Environ with * o not are correctly recognized. (ie \begin{equation*}...). 
+ * 
+ * This function masks LaTeX text: it catches the tags and replace the whole LaTeX code with a
+ * generated marker.
+ * 
+ * @todo enable recognition of other environ: multiline, split, gather.
+ * 
+ * @author Alberto Giudici
+ * @date Dec 2012
+ * @version 0.1
+ * @return parsed text
+ */
+	function processPageLatexCode($pageText){
+		$fName = __METHOD__;
+		$this->profileIn($fName);
+		
+		//<math></math> : inline math LaTeX $ .
+		//watch out <math> tag can have attributes!
+		$reMath = '/<(\s*math\s*)\b[^>]*>(.*?)<\/\1\s*>/';
+		//do the replacing
+  		$pageText = preg_replace_callback( $reMath, array($this,'maskLatexCodeInline'), $pageText);
+		
+		//now consider LaTeX environs
+		$pageText = $this->maskLatexCodeEquation($pageText);
+
+		$this->profileOut($fName);
+		return $pageText;
+	}
+/**
+ * maskLatexCodeEquation masks LaTeX text between special tags.
+ * 
+ * Start with text between \begin{equation} and \end{equation} and $$ $$.
+ * @author Alberto Giudici
+ * @version 0.1
+ * @return text with masked contents
+ */
+	public function maskLatexCodeEquation($pageText){
+	
+		// start with \begin{equation} <-> \end{equation}
+		$startSplitted = preg_split('/(\\\\begin\{equation\*?\})/',$pageText,0, PREG_SPLIT_DELIM_CAPTURE );
+		
+		array_shift($startSplitted);
+		for ($i=0;  $i < count($startSplitted);$i+=2){
+			$beginEnviron = $startSplitted[$i];//get \begin{equation\*?}
+			
+			$endSplitted = preg_split('/(\\\\end\{equation\*?\})/',$startSplitted[$i+1],0, PREG_SPLIT_DELIM_CAPTURE);
+			
+			$content = $endSplitted[0];
+			$endEnviron = $endSplitted[1];//get \end{equation\*?}
+			
+			$equationMk = $this->getMark('latex-code-equation');
+			$all = $beginEnviron.$content.$endEnviron;
+			$this->mask($equationMk, $all);
+			
+			$pageText = str_replace($all, $equationMk, $pageText);
+		}
+		
+		//now $$ <-> $$
+		
+		$startSplitted = explode('$$',$pageText);
+		
+		array_shift($startSplitted);
+		for ($i=0;  $i < count($startSplitted);$i+=2){
+			
+			$content = $startSplitted[$i];
+			
+			$equationMk = $this->getMark('latex-code-equation');
+			$all = "$$".$content."$$";
+			$this->mask($equationMk, $all);
+			
+			$pageText = str_replace($all, $equationMk, $pageText);
+		}
+	
+		return $pageText;
+	}
+/**
+ * Callback for <math></math> substitution.
+ * 
+ * Start with text between \begin{equation} and \end{equation} and $$ $$.
+ * @author Alberto Giudici
+ * @version 0.1
+ * @return text with masked contents
+ */
+	public function maskLatexCodeInline($match){
+		$inlineMk = $this->getMark('latex-code-inline');
+		if ($match[2] == ''){ //no content between <math></math>!
+			$match[2] = ' '; //avoid $$ adding an empty space : $ $
+		}
+		$this->mask($inlineMk, "$".$match[2]."$");
+		return $inlineMk;
 	}
 
 	function addChar($html, $latex, $utf_dec = false, $req_package = false) {
@@ -296,11 +395,11 @@ class Wiki2LaTeXParser {
 
 		return $str;
 	}
-
+/**
+ * Used for parsing the string as is, without comments, extension-tags, etc.
+ */
 	function internalParse($str) {
 		$this->profileIn(__METHOD__);
-
-		// Used for parsing the string as is, without comments, extension-tags, etc.
 
 		//$str = $this->doSimpleReplace($str);
 		
@@ -462,7 +561,7 @@ class Wiki2LaTeXParser {
 		$this->addSimpleReplace(" -\n"," --\n");
 		$this->addSimpleReplace("\n- ", "\n-- ");
 
-		$this->addSimpleReplace("...","{\dots}");//??
+		$this->addSimpleReplace("...","{\dots}");//attention:
 
 		
 		include('w2lChars.php');
@@ -474,11 +573,17 @@ class Wiki2LaTeXParser {
 		$this->profileOut($fName);
 		return;
 	}
-	
+/**
+ * Substitute special chars:  
+ * $chars = array(
+			"…"=>"{\dots}",
+			'~'=> '\(\sim\)',
+			'€'=> '{\euro}',
+		);
+ */
 	function doSpecialChars($str) {
 
 		$chars = array(
-			"…"=>"{\dots}",
 			"…"=>"{\dots}",
 			'~'=> '\(\sim\)',
 			'€'=> '{\euro}',
@@ -518,7 +623,6 @@ class Wiki2LaTeXParser {
 			// old code gives a notice on empty line:
 			$first_char = $this->getFirstChar($line);
 
-
 			$last_line = $pre_line;
 			if ( ' ' == $first_char ) {
 				if ($last_line == true) {
@@ -554,7 +658,7 @@ class Wiki2LaTeXParser {
 					
 						//if ( $preBlock[$block_counter] ==  )
 						$marker = $this->getMark('pre', $block_counter);
-						$work_line = $marker.$work_line;
+						$work_line = $marker."\n".$work_line;
 						//wfVarDump($str);
 						//$str = str_replace($rplBlock[$block_counter], $marker, $str);
 						//wfVarDump($str);
@@ -569,7 +673,7 @@ class Wiki2LaTeXParser {
 			//wfVarDump($work_line);
 			$final_str .= $work_line;
 		}
-		
+
 		//wfVarDump($preBlock);
 		$this->profileOut($fName);
 		return $final_str;
@@ -614,37 +718,45 @@ class Wiki2LaTeXParser {
 		return $str;
 	}
 /**
- * Do string preprocessing: substitution between nowiki tags, stripping out comments and handling noinclude and includeonly content.
+ * Do string preprocessing: substitution between nowiki tags, stripping out 
+ * comments and handling noinclude and includeonly content. Process the LaTeX
+ * code found in the page. The processing of LaTeX code starts here.
+ * @TODO correct the usage of noinclude and includeonly. 
+ *      The LaTeX page should be similar to what you see on the webpage.
+ * @return processed string
  */
 	public function preprocessString($str) {
-		//$this->reportError(strlen($str), __METHOD__);
 		
+		// wikiFM Mod - All LaTeX code in the page is masked to avoid Parser to run on it.
+		$str = $this->processPageLatexCode($str);
+
 		//needed substitutions between <nowiki></nowiki>
 		$str = $this->matchNoWiki($str);
 
 		//strip out comments
 		$str = $this->stripComments($str);
 
-		//$this->reportError(strlen($str), __METHOD__);
 		if ( $this->getVal('leave_noinclude') ) {
 			//leave only the content, remove the tags. 
-			$str = preg_replace('/<noinclude>(.*)<\/noinclude>/smU', "$1", $str);
+			$str = preg_replace('/<(\\/)?noinclude>/smU', '', $str);
 			$this->setVal('leave_noinclude', false);
 		} else {
+			//remove everything
 			$str = preg_replace('/<noinclude>.*<\/noinclude>/smU', '', $str);
 		}
+
 		if ( $this->getVal('insert_includeonly') ) {
 			//leave only the content, remove the tags.
-			$str = preg_replace('/<includeonly>(.*)<\/includeonly>/smU', "$1", $str);
+			//OLD: $str = preg_replace('/<includeonly>(.*)<\/includeonly>/smU', "$1", $str);
+			 $str = preg_replace('/<(\\/)?includeonly>/smU', '', $str);
 		} else {
+			//remove everything
 			$str = preg_replace('/<includeonly>(.*)<\/includeonly>/smU', '', $str);
 			$this->setVal('insert_includeonly', true);
 		}
 
-		//$this->reportError(strlen($str), __METHOD__);
-
 		wfRunHooks('w2lPreProcess', array( &$this, &$str ) );
-		//$this->reportError(strlen($str), __METHOD__);
+
 		return $str;
 	}
 
@@ -1200,14 +1312,18 @@ class Wiki2LaTeXParser {
 			$this->mask($mask_com,   '\href');
 		}
 		return $link;
-	}
+	}	
+/**
+ * Extract w2l handled tag and parse them. For a list of to-be-parsed tag look at w2lTags.php
+ */
 	private function extractParserExtensions( $str = '' ) {
 		$fName = __METHOD__;
 		$this->profileIn($fName);
 		$matches = array();
 		$unique  = 'W2l-'.$this->uniqueString();
 		//$unique .=
-
+		
+		// Note: matches is passed as a pointer.
 		$str = $this->extractTagsAndParams($this->elements, $str, $matches, $unique);
 
 		// second: Some other aspects...
@@ -1234,7 +1350,11 @@ class Wiki2LaTeXParser {
 		$this->profileOut($fName);
 		return $str;
 	}
-
+/**
+ * Extract from tags content, attributes.
+ *  
+ * @param elements list of tag
+ */
 	private function extractTagsAndParams($elements, $text, &$matches, $uniq_prefix = ''){
 		static $n = 1;
 		$stripped = '';
@@ -1274,6 +1394,7 @@ class Wiki2LaTeXParser {
 				$tail = null;
 			} else {
 				if( $element == '!--' ) {
+				   // Comment
 					$end = '/(-->)/';
 				} else {
 					$end = "/(<\\/$element\\s*>)/i";
@@ -2022,8 +2143,8 @@ class Wiki2LaTeXParser {
 		$fName = __METHOD__;
 		$this->profileIn($fName);
 
-		str_replace("\\begin{equation}", ":<math>", $str);
-      str_replace("\\end{equation}", "</math>", $str);
+// 		str_replace("\\begin{equation}", ":<math>", $str);
+//       str_replace("\\end{equation}", "</math>", $str);
 
 		// Chars, which are important for latex commands:
 		// {,},\,&
@@ -2034,9 +2155,9 @@ class Wiki2LaTeXParser {
 		$this->mask($this->specialChars['backslash'], '\\textbackslash ');
 		
 		$chars = array(
-	//		'\\' => $this->specialChars['backslash'],
-	//		"{" => "\{",
-	//		"}" => "\}",
+			'\\' => $this->specialChars['backslash'],
+			"{" => "\{",
+			"}" => "\}",
 			'&' => $this->Et,
 		);
 		//substitute special latex chars with the corresponding marker.
@@ -2046,7 +2167,7 @@ class Wiki2LaTeXParser {
 		return $str;
 	}
 /**
- * Create mask(& substitution) for special mediawiki chars: // # * (others are ignored)
+ * Substitute special mediawiki chars: // # * (others are ignored)
  */ 
 	public function maskMwSpecialChars($str) {
 		$fName = __METHOD__;
@@ -2069,9 +2190,9 @@ class Wiki2LaTeXParser {
 		$this->profileIn($fName);
 		// _,%,§,$,&,#,€,
 		$chars = array(
-		//	'_' => '\_',
+			'_' => '\_',
 			'%' => '\%',
-		//	'$' => '\$',
+			'$' => '\$',
 		);
 		
 		$str = strtr($str, $chars);
@@ -2084,6 +2205,7 @@ class Wiki2LaTeXParser {
  * like links, f.e.
  * 
  * Marker structure: '((UNIQ-W2L-'.$this->unique.'-'.$tag.'-'.sprintf('%08X', $number).'-QINU))'
+ * @param $number user defined number for this marker; Default: -1, use generated one.
  * @return a marker
  */
 	public function getMark($tag, $number = -1) {
@@ -2099,6 +2221,8 @@ class Wiki2LaTeXParser {
 	}
 /**
  * This function processes all templates, variables and parserfunctions.
+ * 
+ * @return $str after process all curly braces: linked content is retrieved and added to the text of the page.
  */
 	public function processCurlyBraces($str) {
 		$fName = __METHOD__;
@@ -2142,13 +2266,17 @@ class Wiki2LaTeXParser {
 		$this->profileOut($fName);
 		return $new_str;
 	}
-
+/**
+ * Process argument strings found between curly braces.
+ * 
+ * @return string Retrieved content linked between curly braces
+ */
 	private function doCurlyBraces($matches) {
 		$orig  = $matches[0]; //original , with {{ and }}
 		$match = $matches[1];
-		//$this->reportError($match, __METHOD__);
+
 		$args = array();
-		//$match = strtr($match, array("\n"=>""));
+
 		$match = trim($match);
 
 		// new
@@ -2162,10 +2290,10 @@ class Wiki2LaTeXParser {
 		}
 		$tmp = '';
 		$type = $this->checkIdentifier($identifier);
-		//$this->reportError($identifier."->".$type, __METHOD__);
+
 		switch ($type) {
 			case W2L_TEMPLATE:
-				if ( '' == $args ) {
+				if ( $args == '' ) {
 					// no arguments
 					$args = array();
 				}
@@ -2173,16 +2301,16 @@ class Wiki2LaTeXParser {
 				// check the name
 
 				$tmp = $this->getContentByTitle($identifier, NS_TEMPLATE);
-				//$this->reportError(strlen($tmp), __METHOD__);
+
 				$tmp = $this->preprocessString($tmp);
-				//$this->reportError(strlen($tmp), __METHOD__);
+
 				$tmp = $this->processTemplateVariables($tmp, $args);
-				//$this->reportError(strlen($tmp), __METHOD__);
+
 				$tmp = $this->processCurlyBraces($tmp);
 			break;
 			case W2L_PARSERFUNCTION:
 				$identifier = substr($identifier, 1);
-				// Now falling through, as the code ist the same now:
+				// Now falling through, as the code is the same now:
 			case W2L_COREPARSERFUNCTION:
 				$fnc = explode(':', $identifier, 2);
 				$expr = $fnc[1];
@@ -2202,30 +2330,14 @@ class Wiki2LaTeXParser {
 			break;
 			case W2L_TRANSCLUSION:
 				if ( '' == $args ) {
-					// Not sure, why this has been introduced. Commenting out the arrayx-fication, for this causes a warning...
+					// Not sure, why this has been introduced.
+					//  Commenting out the arrayx-fication, for this causes a warning...
 					// no arguments
 					$args = array();
 				}
 				$title = substr($identifier, 1);
 				$args = $this->processArgString($args);
 				$tmp = $this->getContentByTitle($title);
-		// HORRIBLE HACK
-		$text = $tmp;
-                $text = str_replace(":<math>", "<math style=\"equation\">", $text);
-                $text = str_replace(": <math>", "<math style=\"equation\">", $text);
-
-                $text = str_replace("\\begin{equation}", "<math style=\"equation\">", $text);
-                $text = str_replace("\\end{equation}", "</math>", $text);
-                $text = str_replace("\\begin{multline}", "<math style=\"multline\">", $text);
-                $text = str_replace("\\end{multline}", "</math>", $text);
-                $text = str_replace("\\begin{gather}", "<math style=\"gather\">", $text);
-                $text = str_replace("\\end{gather}", "</math>", $text);
-                $text = str_replace("\\begin{align}", "<math style=\"align\">", $text);
-                $text = str_replace("\\end{align}", "</math>", $text);
-
-                $text = str_replace("\\begin{split}", "<math style=\"display\">i\begin{split}", $text);
-                $text = str_replace("\\end{split}", "\\end{split}</math>", $text);
-		$tmp = $text;
 				$tmp = $this->preprocessString($tmp);
 				$tmp = $this->processTemplateVariables($tmp, $args);
 				$tmp = $this->processCurlyBraces($tmp);
@@ -2240,6 +2352,11 @@ class Wiki2LaTeXParser {
 		return trim($tmp);
 	}
 
+/**
+ * Process argument string found between curly braces.
+ * 
+ * @return array paramName=>paramValue
+ */
 	private function processArgString($str) {
 		$args = array();
 		$tmp = array();
@@ -2263,20 +2380,26 @@ class Wiki2LaTeXParser {
 			}
 		}
 
-
 		return $args;
 	}
-
+/**
+ * Process w2l Template variables.
+ */
 	private function processTemplateVariables($str, $args = array()) {
 		// replace the content by the args...
 		$this->templateVars = array();
 		$this->templateVars = $args;
 		$str = preg_replace_callback('/\{\{\{(.*?)\}\}\}/sm', array($this, 'doTemplateVariables'), $str);
+		
 		$chars = array('{{{'=>'\{\{\{', '}}}' => '\}\}\}');
 		$str = strtr($str, $chars);
+		
 		unset($this->templateVars);
 		return $str;
 	}
+/**
+ * Replace content of template vars. Callback.
+ */
 	private function doTemplateVariables($match) {
 		// replace the content by the args...
 
@@ -2396,7 +2519,9 @@ class Wiki2LaTeXParser {
 
 		return $new_split;
 	}
-
+/**
+ * Get content of a Wiki article given its title string.
+ */
 	public function getContentByTitle( $title_str , $namespace = NS_MAIN) {
 		$title_str =  trim($title_str);
 
@@ -2409,6 +2534,7 @@ class Wiki2LaTeXParser {
 		}
 		
 		if ( !$title->UserCanRead() ) {
+			//no content if user can't read
 			return '';
 		}
 		
@@ -2417,12 +2543,13 @@ class Wiki2LaTeXParser {
 			$text = $rev->getContent();
 		} else {
 			$text = $title_str;
-		}
-		
+		}	
 		return $text;
 	}
 /** 
- * check if $str is a w2l identifier
+ * Check if $str is a w2l identifier.
+ * 
+ * # and : have a special meaning? Yes: ':' is used for mediawiki transclusions
  */ 
 	public function checkIdentifier($str) {
 		$str = trim($str);
