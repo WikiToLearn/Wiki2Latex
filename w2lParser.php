@@ -329,9 +329,9 @@ class Wiki2LaTeXParser {
 		return $pageText;
 	}
 /**
- * Callback for <math></math> substitution.
+ * Callback for <math> </math> substitution.
  * 
- * Start with text between \begin{equation} and \end{equation} and $$ $$.
+ * Put the text between $<-->$. 
  * @author Alberto Giudici
  * @version 0.1
  * @return text with masked contents
