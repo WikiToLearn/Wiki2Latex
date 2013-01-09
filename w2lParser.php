@@ -329,9 +329,9 @@ class Wiki2LaTeXParser {
 		return $pageText;
 	}
 /**
- * Callback for <math></math> substitution.
+ * Callback for <math> </math> substitution.
  * 
- * Start with text between \begin{equation} and \end{equation} and $$ $$.
+ * Put the text between $<-->$. 
  * @author Alberto Giudici
  * @version 0.1
  * @return text with masked contents
@@ -2167,7 +2167,9 @@ class Wiki2LaTeXParser {
 		return $str;
 	}
 /**
- * Substitute special mediawiki chars: // # * (others are ignored)
+ * Substitute special mediawiki chars: // # (others are ignored)
+ * 
+ * Asterisk * is now ignored: no substitution with \ast{}.
  */ 
 	public function maskMwSpecialChars($str) {
 		$fName = __METHOD__;
@@ -2176,7 +2178,7 @@ class Wiki2LaTeXParser {
 		// #,*,[,],{,},|
 		$chars = array(
 			'#' => "\#",
-			"*" => "\ast{}",
+			//"*" => "\ast{}",
 		);
 		$str = strtr($str, $chars);
 		$this->profileOut($fName);
