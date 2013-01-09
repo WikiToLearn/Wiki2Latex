@@ -31,6 +31,7 @@ TODO:
 BUGS:
 ----
 - __FIXED__ verbatim before heading makes heading recognition fails. (preProcessing removed extra \n)
+- __FIXED__ asterisk substitution
 
 Notes on Parser:
 ----------------

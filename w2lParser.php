@@ -2167,7 +2167,9 @@ class Wiki2LaTeXParser {
 		return $str;
 	}
 /**
- * Substitute special mediawiki chars: // # * (others are ignored)
+ * Substitute special mediawiki chars: // # (others are ignored)
+ * 
+ * Asterisk * is now ignored: no substitution with \ast{}.
  */ 
 	public function maskMwSpecialChars($str) {
 		$fName = __METHOD__;
@@ -2176,7 +2178,7 @@ class Wiki2LaTeXParser {
 		// #,*,[,],{,},|
 		$chars = array(
 			'#' => "\#",
-			"*" => "\ast{}",
+			//"*" => "\ast{}",
 		);
 		$str = strtr($str, $chars);
 		$this->profileOut($fName);
