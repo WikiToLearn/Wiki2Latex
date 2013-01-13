@@ -293,6 +293,7 @@ $messages['it'] = array(
 	'w2l_export_tex_files' => '(sorgente tex)',
 	'w2l_export_pdf'       => 'Compila e scarica PDF!',
 	'w2l_export_start'     => 'Inizia esportazione',
+	'w2l_export_help_text' => 'Se hai bisogno di <strong>aiuto</strong> contatta altri utenti, <a href="index.php/Aiuto:IRC" title="vai alla pagina sulla chat IRC">chat IRC</a>, oppure cerca su <a href="index.php/Aiuto:Indice" title="pagina di Aiuto, indice">Aiuto</a> ', //insert also html code.
 	'w2l_chapter'          => 'capitolo',
 	'w2l_page'             => 'pagina',
 	'w2l_select_docclass_book' => 'Documentclass Book/scrbook (==heading== gets \chapter{heading})',

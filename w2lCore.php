@@ -128,7 +128,7 @@ Da questa pagina &egrave; possibile scaricare l&apos;articolo che
 <li><strong>'.wfMsg('w2l_export_tex_files').'</strong> restituisce il codice sorgente LaTeX del pdf.</li>
 </ul>
 </p>
-<p>Se hai bisogno di <strong>aiuto</strong> continua a leggere.</p>
+<p>'.wfMsg('w2l_export_help_text').'</p>
 ';
 		$output .= '<form method="post" id="mf-former" action="'.$wgScriptPath.'/index.php">'."\n";
 		$output .= '<input type="hidden" name="title" value="'.$url_title.'" />'."\n";
