@@ -1,0 +1,36 @@
+
+module mypol 1.0;
+
+require {
+	type user_tmp_t;
+	type xdm_tmp_t;
+	type httpd_t;
+	type xfs_tmp_t;
+	type http_port_t;
+	type httpd_sys_content_t;
+	class process setrlimit;
+	class tcp_socket name_connect;
+	class dir { write getattr remove_name create add_name };
+	class file { write getattr setattr create unlink open };
+}
+
+#============= httpd_t ==============
+#!!!! This avc can be allowed using one of the these booleans:
+#     httpd_can_network_relay, httpd_graceful_shutdown, allow_ypbind, httpd_can_network_connect
+
+allow httpd_t http_port_t:tcp_socket name_connect;
+#!!!! This avc can be allowed using the boolean 'httpd_unified'
+
+allow httpd_t httpd_sys_content_t:dir { write remove_name create add_name };
+#!!!! This avc can be allowed using the boolean 'httpd_unified'
+
+allow httpd_t httpd_sys_content_t:file { write create unlink setattr };
+#!!!! This avc is allowed in the current policy
+
+allow httpd_t self:process setrlimit;
+#!!!! This avc can be allowed using the boolean 'httpd_read_user_content'
+
+allow httpd_t user_tmp_t:file open;
+allow httpd_t xdm_tmp_t:dir getattr;
+allow httpd_t xdm_tmp_t:file getattr;
+allow httpd_t xfs_tmp_t:dir getattr;
