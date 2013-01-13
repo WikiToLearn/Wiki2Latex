@@ -389,6 +389,7 @@ Da questa pagina &egrave; possibile scaricare l&apos;articolo che
 		$wgOut->setPagetitle( wfMsg('w2l_result_title', $title) );
 		$wgOut->setSubtitle( wfMsg('w2l_result_subtitle', $title) );
 		$wgOut->addHTML( wfMsg('w2l_result_heading') );
+		$wgOut->addHTML( wfMsg('w2l_result_text') );
 		if (false == $compile_error) {
 			$title_fn = w2lWebsafeTitle($title);
 			

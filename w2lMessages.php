@@ -37,6 +37,7 @@ $messages['en'] = array(
 	'w2l_export_tex_files' => '(sorgente tex)',
 	'w2l_export_pdf'       => 'Compila e scarica PDF!',
 	'w2l_export_start'     => 'Start Export',
+	'w2l_export_help_text' => 'Se hai bisogno di <strong>aiuto</strong> contatta altri utenti, <a href="index.php/Aiuto:IRC" title="vai alla pagina sulla chat IRC">chat IRC</a>, oppure cerca su <a href="index.php/Aiuto:Indice" title="pagina di Aiuto, indice">Aiuto</a> ', //insert also html code.
 	'w2l_chapter'          => 'chapter',
 	'w2l_page'             => 'page',
 	'w2l_select_docclass_book' => 'Documentclass Book/scrbook (==heading== gets \chapter{heading})',
@@ -68,6 +69,7 @@ $messages['en'] = array(
 	'w2l_temppath' => 'Path: $1',
 	'w2l_compile_run' => '== Run #$1 ==',
 	'w2l_result_heading' => '<h2>LaTeX-Result</h2>',
+	'w2l_result_text' => '<h2>LaTeX-Result</h2>',
 	'w2l_result_folder'=> '<table style="width:100%;"><tr><td><big><strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=pdf">$2.pdf</a></strong></big></td><td style="text-align:right;">Additional links: <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a>, <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=log">$2.log</a></td></table>',
 	'w2l_result_tex'=> '<big><strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a></strong></big>',
 	'w2l_parser_article_not_existing' => 'Article does not exist: $1',
@@ -101,6 +103,7 @@ $messages['de'] = array(
 	'w2l_export_tex_files' => 'Download *.tex files',
 	'w2l_export_pdf'       => 'Download PDF-Datei (benötigt eine funktionierende LaTeX-Distribution auf dem Server!)',
 	'w2l_export_start'     => 'Start',
+	'w2l_export_help_text' => 'Se hai bisogno di <strong>aiuto</strong> contatta altri utenti, <a href="index.php/Aiuto:IRC" title="vai alla pagina sulla chat IRC">chat IRC</a>, oppure cerca su <a href="index.php/Aiuto:Indice" title="pagina di Aiuto, indice">Aiuto</a> ', //insert also html code.
 	'w2l_chapter'          => 'chapter',
 	'w2l_page'             => 'page',
 	'w2l_select_docclass_book' => 'Documentclass Book/scrbook (==Überschrift== wird \chapter{heading})',
@@ -130,6 +133,7 @@ $messages['de'] = array(
 	'w2l_temppath' => 'Pfad: $1',
 	'w2l_compile_run' => '== Lauf #$1 ==',
 	'w2l_result_heading' => '<h2>LaTeX-Ergebnis</h2>',
+	'w2l_result_text' => '<h2>LaTeX-Result</h2>',
 	'w2l_result_folder'=> '<table style="width:100%;"><tr><td><big><strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=pdf">$2.pdf</a></strong></big></td><td style="text-align:right;">Zusätzliche Links: <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a>, <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=log">$2.log</a></td></table>',
 	'w2l_result_tex'=> '<big><strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a></strong></big>',
 	'w2l_parser_article_not_existing' => 'Artikel existiert nicht: $1',
@@ -163,6 +167,7 @@ $messages['uk'] = array(
 	'w2l_export_tex_files'		=> 'Завантажити tex-файл',
 	'w2l_export_pdf'			=> 'Завантажити PDF файл (вимагає робочого LaTeX-пакету на сервері!)',
 	'w2l_export_start'     => 'Почати Експорт',
+	'w2l_export_help_text' => 'Se hai bisogno di <strong>aiuto</strong> contatta altri utenti, <a href="index.php/Aiuto:IRC" title="vai alla pagina sulla chat IRC">chat IRC</a>, oppure cerca su <a href="index.php/Aiuto:Indice" title="pagina di Aiuto, indice">Aiuto</a> ', //insert also html code.
 	'w2l_chapter'          => 'розділ',
 	'w2l_page'             => 'сторінка',
 	'w2l_select_docclass_book' => 'Documentclass Book/scrbook (==заголовок== стане \chapter{заголовок})',
@@ -193,6 +198,7 @@ $messages['uk'] = array(
 	'w2l_temppath' => 'Шлях: $1',
 	'w2l_compile_run' => '== Виконання #$1 ==',
 	'w2l_result_heading' => '<h2>LaTeX-Результат</h2>',
+	'w2l_result_text' => '<h2>LaTeX-Result</h2>',
 	'w2l_result_folder'=> '<table style="width:100%;"><tr><td><big><strong><a href="$1/extensions/w2l/w2lSendFile.php?fid=$2&fmt=pdf">Main.pdf</a></strong></big></td><td style="text-align:right;">Додаткові посилання: <a href="$1/extensions/w2l/w2lSendFile.php?fid=$2&fmt=tex">Main.tex</a>, <a href="$1/extensions/w2l/w2lSendFile.php?fid=$2&fmt=log">Main.log</a></td></table>',
 	'w2l_result_tex'=> '<big><strong><a href="$1/extensions/w2l/w2lSendFile.php?fid=$2&fmt=tex">Main.tex</a></strong></big>',
 	'w2l_parser_no_default_value' => "Не може бути типовим значенням",
@@ -228,6 +234,7 @@ $messages['pl'] = array(
 	'w2l_export_tex_files' => 'Pobierz plik TeX',
 	'w2l_export_pdf'       => 'Pobierz plik PDF (wymaga instalacji LaTeX)',
 	'w2l_export_start'     => 'Rozpocznik konwersje',
+	'w2l_export_help_text' => 'Se hai bisogno di <strong>aiuto</strong> contatta altri utenti, <a href="index.php/Aiuto:IRC" title="vai alla pagina sulla chat IRC">chat IRC</a>, oppure cerca su <a href="index.php/Aiuto:Indice" title="pagina di Aiuto, indice">Aiuto</a> ', //insert also html code.
 	'w2l_chapter'          => 'chapter',
 	'w2l_page'             => 'page',
 	'w2l_select_docclass_book' => 'Klasa dokumentu: book (==naglowki== stana sie nazwami rozdzialow \chapter{})',
@@ -258,6 +265,7 @@ $messages['pl'] = array(
 	'w2l_temppath' => 'Sciezka: $1',
 	'w2l_compile_run' => '== Wykonaj #$1 ==',
 	'w2l_result_heading' => '<h2>Wynik dzialania LaTeX</h2>',
+	'w2l_result_text' => '<h2>LaTeX-Result</h2>',
 	'w2l_result_folder'=> '<table style="width:100%;"><tr><td><big><strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=pdf">$2.pdf</a></strong></big></td><td style="text-align:right;">Additional links: <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a>, <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=log">$2.log</a></td></table>',
 	'w2l_result_tex'=> '<big><strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a></strong></big>',
 	'w2l_parser_article_not_existing' => 'Artykul $1 nie istnieje',
@@ -316,14 +324,21 @@ $messages['it'] = array(
 	'w2l_start_export' => 'Start Export',
 	'w2l_pdfexport_disabled' => '<p>Spiacenti, pdf-export non è abilitato.</p>',
 	'w2l_debug_info' => '<p>Time taken to parse article: $1 seconds. Template-Statistic: $2 Inclusions with $3 Bytes</p>',
-	'w2l_result_subtitle' => 'Result of: $1',
+	'w2l_result_subtitle' => '&Egrave; stato compilato: $1',
 	'w2l_result_title' => '$1 (Wiki2LaTeX)',
 	'w2l_export_mode' => '<p>Mode: $1</p>',
 	'w2l_compile_command' => 'Command: $1',
 	'w2l_temppath' => 'Path: $1',
 	'w2l_compile_run' => '== Run #$1 ==',
-	'w2l_result_heading' => '<h2>LaTeX-Result</h2>',
-	'w2l_result_folder'=> '<table style="width:100%;"><tr><td><big><strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=pdf">$2.pdf</a></strong></big></td><td style="text-align:right;">Additional links: <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a>, <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=log">$2.log</a></td></table>',
+	'w2l_result_heading' => '<h2>Risultato della compilazione</h2>',
+	'w2l_result_text' => ' ',//@TODO.. insert text here
+	'w2l_result_folder'=> '<div style="padding-left:3%;">
+	<p>Scarica il pdf:<br />
+		<strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=pdf"> $2.pdf</a></strong>
+	</p>
+	<p>
+		Altri link: <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a>, <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=log">$2.log</a> 
+	</p></div>',
 	'w2l_result_tex'=> '<big><strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a></strong></big>',
 	'w2l_parser_article_not_existing' => 'Article does not exist: $1',
 	'w2l_parser_protocol' => '<p>Error protocol</p>',
