@@ -38,6 +38,9 @@ $messages['en'] = array(
 	'w2l_export_pdf'       => 'Compila e scarica PDF!',
 	'w2l_export_start'     => 'Start Export',
 	'w2l_export_help_text' => 'Se hai bisogno di <strong>aiuto</strong> contatta altri utenti, <a href="index.php/Aiuto:IRC" title="vai alla pagina sulla chat IRC">chat IRC</a>, oppure cerca su <a href="index.php/Aiuto:Indice" title="pagina di Aiuto, indice">Aiuto</a> ', //insert also html code.
+	'w2l_export_after_status' => '<h2>Info</h2>
+<p>La compilazione in pdf è stata eseguita dall&apos;estensione Wiki2LaTeX ($1).
+Se trovi un bug <a href="index.php/Portale_comunità/Contenuti/Elenco_Bug_wiki2latex" title="apri la pagina per la segnalazione dei bug"> segnalalo</a>!</p>',//text inserted after the status log in w2llatexform see w2lCore.
 	'w2l_chapter'          => 'chapter',
 	'w2l_page'             => 'page',
 	'w2l_select_docclass_book' => 'Documentclass Book/scrbook (==heading== gets \chapter{heading})',
@@ -104,6 +107,9 @@ $messages['de'] = array(
 	'w2l_export_pdf'       => 'Download PDF-Datei (benötigt eine funktionierende LaTeX-Distribution auf dem Server!)',
 	'w2l_export_start'     => 'Start',
 	'w2l_export_help_text' => 'Se hai bisogno di <strong>aiuto</strong> contatta altri utenti, <a href="index.php/Aiuto:IRC" title="vai alla pagina sulla chat IRC">chat IRC</a>, oppure cerca su <a href="index.php/Aiuto:Indice" title="pagina di Aiuto, indice">Aiuto</a> ', //insert also html code.
+	'w2l_export_after_status' => '<h2>Info</h2>
+<p>La compilazione in pdf è stata eseguita dall&apos;estensione Wiki2LaTeX ($1).
+Se trovi un bug <a href="index.php/Portale_comunità/Contenuti/Elenco_Bug_wiki2latex" title="apri la pagina per la segnalazione dei bug"> segnalalo</a>!</p>',//text inserted after the status log in w2llatexform see w2lCore.
 	'w2l_chapter'          => 'chapter',
 	'w2l_page'             => 'page',
 	'w2l_select_docclass_book' => 'Documentclass Book/scrbook (==Überschrift== wird \chapter{heading})',
@@ -168,6 +174,9 @@ $messages['uk'] = array(
 	'w2l_export_pdf'			=> 'Завантажити PDF файл (вимагає робочого LaTeX-пакету на сервері!)',
 	'w2l_export_start'     => 'Почати Експорт',
 	'w2l_export_help_text' => 'Se hai bisogno di <strong>aiuto</strong> contatta altri utenti, <a href="index.php/Aiuto:IRC" title="vai alla pagina sulla chat IRC">chat IRC</a>, oppure cerca su <a href="index.php/Aiuto:Indice" title="pagina di Aiuto, indice">Aiuto</a> ', //insert also html code.
+	'w2l_export_after_status' => '<h2>Info</h2>
+<p>La compilazione in pdf è stata eseguita dall&apos;estensione Wiki2LaTeX ($1).
+Se trovi un bug <a href="index.php/Portale_comunità/Contenuti/Elenco_Bug_wiki2latex" title="apri la pagina per la segnalazione dei bug"> segnalalo</a>!</p>',//text inserted after the status log in w2llatexform see w2lCore.
 	'w2l_chapter'          => 'розділ',
 	'w2l_page'             => 'сторінка',
 	'w2l_select_docclass_book' => 'Documentclass Book/scrbook (==заголовок== стане \chapter{заголовок})',
@@ -235,6 +244,9 @@ $messages['pl'] = array(
 	'w2l_export_pdf'       => 'Pobierz plik PDF (wymaga instalacji LaTeX)',
 	'w2l_export_start'     => 'Rozpocznik konwersje',
 	'w2l_export_help_text' => 'Se hai bisogno di <strong>aiuto</strong> contatta altri utenti, <a href="index.php/Aiuto:IRC" title="vai alla pagina sulla chat IRC">chat IRC</a>, oppure cerca su <a href="index.php/Aiuto:Indice" title="pagina di Aiuto, indice">Aiuto</a> ', //insert also html code.
+	'w2l_export_after_status' => '<h2>Info</h2>
+<p>La compilazione in pdf è stata eseguita dall&apos;estensione Wiki2LaTeX ($1).
+Se trovi un bug <a href="index.php/Portale_comunità/Contenuti/Elenco_Bug_wiki2latex" title="apri la pagina per la segnalazione dei bug"> segnalalo</a>!</p>',//text inserted after the status log in w2llatexform see w2lCore.
 	'w2l_chapter'          => 'chapter',
 	'w2l_page'             => 'page',
 	'w2l_select_docclass_book' => 'Klasa dokumentu: book (==naglowki== stana sie nazwami rozdzialow \chapter{})',
@@ -292,7 +304,7 @@ $messages['it'] = array(
 	'wiki2latex'           => 'Wiki2LaTeX',
 	'wiki2latexspecialpage'    => 'Wiki2LaTeX',
 	'w2l_tab'              => 'Scarica la versione LaTeX/PDF',
-        'tooltip-ca-w2l_tab'              => 'Scarica la versione LaTeX/PDF',
+	'tooltip-ca-w2l_tab'              => 'Scarica la versione LaTeX/PDF',
 	'w2l_description'      => 'Converti un articoli a LaTeX e PDF.',
 	'w2l_export_title'     => '$1',
 	'w2l_export_subtitle'  => 'Esportazione di: $1 con (Wiki2LaTeX)',
@@ -302,6 +314,9 @@ $messages['it'] = array(
 	'w2l_export_pdf'       => 'Compila e scarica PDF!',
 	'w2l_export_start'     => 'Inizia esportazione',
 	'w2l_export_help_text' => 'Se hai bisogno di <strong>aiuto</strong> contatta altri utenti, <a href="index.php/Aiuto:IRC" title="vai alla pagina sulla chat IRC">chat IRC</a>, oppure cerca su <a href="index.php/Aiuto:Indice" title="pagina di Aiuto, indice">Aiuto</a> ', //insert also html code.
+	'w2l_export_after_status' => '<h2>Info</h2>
+<p>La compilazione in pdf è stata eseguita dall&apos;estensione Wiki2LaTeX ($1).
+Se trovi un bug <a href="index.php/Portale_comunità/Contenuti/Elenco_Bug_wiki2latex" title="apri la pagina per la segnalazione dei bug"> segnalalo</a>!</p>',//text inserted after the status log in w2llatexform see w2lCore.
 	'w2l_chapter'          => 'capitolo',
 	'w2l_page'             => 'pagina',
 	'w2l_select_docclass_book' => 'Documentclass Book/scrbook (==heading== gets \chapter{heading})',
@@ -338,7 +353,9 @@ $messages['it'] = array(
 	</p>
 	<p>
 		Altri link: <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a>, <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=log">$2.log</a> 
-	</p></div>',
+	</p></div>
+	<p> Se hai trovato un bug, un errore nel pdf, <a href="index.php/Portale_comunità/Contenuti/Elenco_Bug_wiki2latex" title="apri la pagina per la segnalazione dei bug"> segnalalo</a>!
+	</p>',
 	'w2l_result_tex'=> '<big><strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a></strong></big>',
 	'w2l_parser_article_not_existing' => 'Article does not exist: $1',
 	'w2l_parser_protocol' => '<p>Error protocol</p>',

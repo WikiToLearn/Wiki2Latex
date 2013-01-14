@@ -261,6 +261,7 @@ Da questa pagina &egrave; possibile scaricare l&apos;articolo che
 		}     
 
 		$output .= $this->getFolderLinks();
+		$output .= wfMsg('w2l_export_after_status',W2L_VERSION);
 		$output .= '</form>'."\n";
 		$output .= '</div>';
 
@@ -409,7 +410,6 @@ Da questa pagina &egrave; possibile scaricare l&apos;articolo che
 		if ( $wgUser->getOption('w2lShowLog') == true && $compile == true ) {
 			$wgOut->addHTML( '<h2>Log file:</h2><textarea style="height:200px">'.$compiler->getLogFile().'</textarea>' );
 		}
-
 		$wgOut->addHTML( $output );
 
 		return true;
