@@ -130,13 +130,13 @@ Da questa pagina &egrave; possibile scaricare l&apos;articolo che
 </p>
 <p>'.wfMsg('w2l_export_help_text').'</p>
 ';
-		$output .= '<form method="post" id="mf-former" action="'.$wgScriptPath.'/index.php">'."\n";
+		$output .= '<form method="post" id="w2lFmFormer" action="'.$wgScriptPath.'/index.php">'."\n";
 		$output .= '<input type="hidden" name="title" value="'.$url_title.'" />'."\n";
 		$output .= '<input type="hidden" name="started" value="1" />'."\n";
 		
 		$fieldsets = array();
 		
-		$export_options['legend'] = wfMsg('w2l_select_output'); /*wfMsg is now deprecated[mediawiki.org]*/
+		$export_options['legend'] = '<strong>'.wfMsg('w2l_select_output').'</strong>'; /*wfMsg is now deprecated[mediawiki.org]*/
 		$export_options['html'] = '<button type="submit" name="action" value="w2ltextarea">'.wfMsg('w2l_select_textarea').'</button>';
 		$export_options['html'] .= '<button type="submit" name="action" value="w2ltexfiles">'.wfMsg('w2l_select_texfiles').'</button>';
 
@@ -261,8 +261,8 @@ Da questa pagina &egrave; possibile scaricare l&apos;articolo che
 		}     
 
 		$output .= $this->getFolderLinks();
-		$output .= wfMsg('w2l_export_after_status',W2L_VERSION);
 		$output .= '</form>'."\n";
+		$output .= wfMsg('w2l_export_after_status',W2L_VERSION);
 		$output .= '</div>';
 
 		$wgOut->addHTML($output);
@@ -403,12 +403,14 @@ Da questa pagina &egrave; possibile scaricare l&apos;articolo che
 		} else {
 			$wgOut->addHTML('<p>'. wfMsg('w2l_latex_failed',$wgScriptPath, $tmpPiece). '</p>' );
 		}
-		$wgOut->addHTML( '<textarea style="height:200px">'.$compiler->getLog().'</textarea>' );
+		$wgOut->addHTML( '<textarea class="w2lLogOutput" style="height:200px">'.$compiler->getLog().'</textarea>' );
 		if ( $wgUser->getOption('w2lShowParsed') == true ) {
-			$wgOut->addHTML( '<h2>Parsed LaTeX-Code:</h2><textarea style="height:300px">'.htmlspecialchars($parsed).'</textarea>' );
+			$wgOut->addHTML( '<h2>Parsed LaTeX-Code:</h2>
+				<textarea class="w2lLogOutput" style="height:300px">'.htmlspecialchars($parsed).'</textarea>' );
 		}
 		if ( $wgUser->getOption('w2lShowLog') == true && $compile == true ) {
-			$wgOut->addHTML( '<h2>Log file:</h2><textarea style="height:200px">'.$compiler->getLogFile().'</textarea>' );
+			$wgOut->addHTML( '<h2>Log file:</h2>
+				<textarea class="w2lLogOutput" style="height:200px">'.$compiler->getLogFile().'</textarea>' );
 		}
 		$wgOut->addHTML( $output );
 
