@@ -26,6 +26,10 @@ $messages = array();
 
 $messages['en'] = array(
 	'wiki2latex'           => 'Wiki2LaTeX',
+//name of the extension with the version
+	'wiki2latex_version'		=> 'Wiki2LaTeX('.W2L_VERSION.')',
+//$1,$2 are meant to be the start and the end of a tag
+	'wiki2latex_version_tag'		=> '$1 Wiki2LaTeX$2('.W2L_VERSION.')',
 	'wiki2latexspecialpage'    => 'Wiki2LaTeX',
 	'w2l_tab'              => 'Scarica la versione LaTeX/PDF',
         'tooltip-ca-w2l_tab'              => 'Scarica la versione LaTeX/PDF',
@@ -96,6 +100,10 @@ Se trovi un bug <a href="index.php/Portale_comunità/Contenuti/Elenco_Bug_wiki2l
 );
 $messages['de'] = array(
 	'wiki2latex'           => 'Wiki2LaTeX',
+//name of the extension with the version
+	'wiki2latex_version'		=> 'Wiki2LaTeX('.W2L_VERSION.')',
+//$1,$2 are meant to be the start and the end of a tag
+	'wiki2latex_version_tag'		=> '$1 Wiki2LaTeX$2('.W2L_VERSION.')',
 	'wiki2latexspecialpage'    => 'Wiki2LaTeX',
 	'w2l_tab'              => 'LaTeX/PDF',
 	'w2l_description'      => 'Konvertiert eine Wiki-Seite in LaTeX und PDF.',
@@ -163,6 +171,10 @@ Se trovi un bug <a href="index.php/Portale_comunità/Contenuti/Elenco_Bug_wiki2l
 );
 $messages['uk'] = array(
 	'wiki2latex'				=> 'Wiki2LaTeX',
+//name of the extension with the version
+	'wiki2latex_version'		=> 'Wiki2LaTeX('.W2L_VERSION.')',
+//$1,$2 are meant to be the start and the end of a tag
+	'wiki2latex_version_tag'		=> '$1 Wiki2LaTeX$2('.W2L_VERSION.')',
 	'wiki2latexspecialpage'		=> 'Wiki2LaTeX',
 	'w2l_tab'					=> 'LaTeX/PDF',
 	'w2l_description'			=> 'Конвертує статтю в LaTeX та PDF.',
@@ -233,6 +245,10 @@ Se trovi un bug <a href="index.php/Portale_comunità/Contenuti/Elenco_Bug_wiki2l
 	
 $messages['pl'] = array(
 	'wiki2latex'           => 'Wiki2LaTeX',
+//name of the extension with the version
+	'wiki2latex_version'		=> 'Wiki2LaTeX('.W2L_VERSION.')',
+//$1,$2 are meant to be the start and the end of a tag
+	'wiki2latex_version_tag'		=> '$1 Wiki2LaTeX$2('.W2L_VERSION.')',
 	'wiki2latexspecialpage'    => 'Wiki2LaTeX',
 	'w2l_tab'              => 'LaTeX/PDF',
 	'w2l_description'      => 'Konwertuje artykul do LaTeX lub PDF.',
@@ -301,7 +317,11 @@ Se trovi un bug <a href="index.php/Portale_comunità/Contenuti/Elenco_Bug_wiki2l
 );
 
 $messages['it'] = array(
-	'wiki2latex'           => 'Wiki2LaTeX',
+	'wiki2latex'           	=> 'Wiki2LaTeX',
+//name of the extension with the version
+	'wiki2latex_version'		=> 'Wiki2LaTeX('.W2L_VERSION.')',
+//$1,$2 are meant to be the start and the end of a tag
+	'wiki2latex_version_tag'		=> '$1 Wiki2LaTeX$2('.W2L_VERSION.')',
 	'wiki2latexspecialpage'    => 'Wiki2LaTeX',
 	'w2l_tab'              => 'Scarica la versione LaTeX/PDF',
 	'tooltip-ca-w2l_tab'              => 'Scarica la versione LaTeX/PDF',
@@ -314,9 +334,11 @@ $messages['it'] = array(
 	'w2l_export_pdf'       => 'Compila e scarica PDF!',
 	'w2l_export_start'     => 'Inizia esportazione',
 	'w2l_export_help_text' => 'Se hai bisogno di <strong>aiuto</strong> contatta altri utenti, <a href="index.php/Aiuto:IRC" title="vai alla pagina sulla chat IRC">chat IRC</a>, oppure cerca su <a href="index.php/Aiuto:Indice" title="pagina di Aiuto, indice">Aiuto</a> ', //insert also html code.
+//$1 is the link for bug signaling
+//$2,$3 are meant to be the start and the end of a tag
 	'w2l_export_after_status' => '<h2>Info</h2>
-<p>La compilazione in pdf è stata eseguita dall&apos;estensione Wiki2LaTeX ($1).
-Se trovi un bug <a href="index.php/Portale_comunità/Contenuti/Elenco_Bug_wiki2latex" title="apri la pagina per la segnalazione dei bug"> segnalalo</a>!</p>',//text inserted after the status log in w2llatexform see w2lCore.
+<p>La compilazione in pdf è stata eseguita dall&apos;estensione $2Wiki2LaTeX$3 ('.W2L_VERSION.').
+Se trovi un bug <a href="$1" title="apri la pagina per la segnalazione dei bug"> segnalalo</a>!</p>',//text inserted after the status log in w2llatexform see w2lCore.
 	'w2l_chapter'          => 'capitolo',
 	'w2l_page'             => 'pagina',
 	'w2l_select_docclass_book' => 'Documentclass Book/scrbook (==heading== gets \chapter{heading})',

@@ -17,7 +17,8 @@ Notes:
 ------
 - The Namespace LaTeX is undefined, can it be useful? User can define templates.
 - The documentation comments are used also to signal relevant parts of code which need corrections.
-
+- __[CSS]__ '#w2lFmFormer' is the id of the form in the w2llatexform page and 
+'.w2lLogOutput' is the class of the textareas in the onpdf page.
 
 TODO:
 -----
@@ -27,6 +28,7 @@ TODO:
 - Mediawiki TOC is simply ignored by w2l, what to do?
 - Check links.
 - FIX $this->addSimpleReplace("...","{\dots}") in w2lParser::initParsing() & w2lPserse::doSpecialChars()
+- Check messages...there is the need for a strong code rearrangement.
 
 BUGS:
 ----
