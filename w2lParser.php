@@ -2276,7 +2276,6 @@ class Wiki2LaTeXParser {
 	private function doCurlyBraces($matches) {
 		$orig  = $matches[0]; //original , with {{ and }}
 		$match = $matches[1];
-
 		$args = array();
 
 		$match = trim($match);
@@ -2317,6 +2316,7 @@ class Wiki2LaTeXParser {
 				$fnc = explode(':', $identifier, 2);
 				$expr = $fnc[1];
 				$function = $fnc[0];
+
 				$mark = $this->getMark('pipe');
 
 				$args = preg_replace('/\{\{\{(.*)\|(.*)\}\}\}/U', '{{{$1'.$mark.'$2}}}', $args);
@@ -2395,7 +2395,7 @@ class Wiki2LaTeXParser {
 		
 		$chars = array('{{{'=>'\{\{\{', '}}}' => '\}\}\}');
 		$str = strtr($str, $chars);
-		
+
 		unset($this->templateVars);
 		return $str;
 	}
@@ -2405,18 +2405,28 @@ class Wiki2LaTeXParser {
 	private function doTemplateVariables($match) {
 		// replace the content by the args...
 
+		//if there is an optional value
 		if ( substr_count($match[1],'|') ) {
 			$with_default = explode('|', $match[1], 2);
-
-			$content = $this->templateVars[$with_default[0]];
-
+			
+			if (array_key_exists($with_default[0],$this->templateVars) ){
+				$content = $this->templateVars[$with_default[0]]; //check if array_key_exists 
+			}else{
+				$content = '';
+			}
+			
 			if ( empty($content) ) {
-				return $with_default[1];
+				return $with_default[1];//return default value
 			} else {
 				return $content;
 			}
 		} else {
-			$content = $this->templateVars[$match[1]];
+			//NO optional value
+			if (array_key_exists($match[1],$this->templateVars) ){
+				$content = $this->templateVars[$match[1]]; //check if array_key_exists 
+			}else{
+				$content = '';
+			}
 
 			if ( empty($content) ) {
 				return $match[0];

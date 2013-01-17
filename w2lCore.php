@@ -114,7 +114,22 @@ class Wiki2LaTeXCore {
 			$output .= $msg_add;
 		} 
 
-		$output .= '<div id="mf-pdf"><h2>Questa pagina funziona solo in visualizzazione normale. Se stai utilizzando la visualizzazione mobile, e non visualizzi il modulo per scaricare il pdf, fai clic sul link qui in basso.</h2>';
+		$output .= '<div id="mf-pdf">
+<h2>Esporta articolo in PDF</h2>
+<p><strong>Questa pagina funziona solo in visualizzazione normale.</strong><br />
+ Se stai utilizzando la visualizzazione mobile, e non visualizzi
+ il modulo per scaricare il pdf, fai clic sul link qui in basso.</p>
+<p>
+Da questa pagina &egrave; possibile scaricare l&apos;articolo che
+ hai scelto in formato pdf: 
+ <ul>
+<li><strong>'.wfMsg('w2l_export_pdf').'</strong> ti porta alla pagina dalla quale scaricare il pdf.</li>
+<li><strong>'.wfMsg('w2l_export_textarea').'</strong> per ottenere il testo della pagina convertito in testo LaTeX.</li>
+<li><strong>'.wfMsg('w2l_export_tex_files').'</strong> restituisce il codice sorgente LaTeX del pdf.</li>
+</ul>
+</p>
+<p>'.wfMsg('w2l_export_help_text').'</p>
+';
 		$output .= '<form method="post" id="mf-former" action="'.$wgScriptPath.'/index.php">'."\n";
 		$output .= '<input type="hidden" name="title" value="'.$url_title.'" />'."\n";
 		$output .= '<input type="hidden" name="started" value="1" />'."\n";
@@ -246,6 +261,7 @@ class Wiki2LaTeXCore {
 		}     
 
 		$output .= $this->getFolderLinks();
+		$output .= wfMsg('w2l_export_after_status',W2L_VERSION);
 		$output .= '</form>'."\n";
 		$output .= '</div>';
 
@@ -374,6 +390,7 @@ class Wiki2LaTeXCore {
 		$wgOut->setPagetitle( wfMsg('w2l_result_title', $title) );
 		$wgOut->setSubtitle( wfMsg('w2l_result_subtitle', $title) );
 		$wgOut->addHTML( wfMsg('w2l_result_heading') );
+		$wgOut->addHTML( wfMsg('w2l_result_text') );
 		if (false == $compile_error) {
 			$title_fn = w2lWebsafeTitle($title);
 			
@@ -393,7 +410,6 @@ class Wiki2LaTeXCore {
 		if ( $wgUser->getOption('w2lShowLog') == true && $compile == true ) {
 			$wgOut->addHTML( '<h2>Log file:</h2><textarea style="height:200px">'.$compiler->getLogFile().'</textarea>' );
 		}
-
 		$wgOut->addHTML( $output );
 
 		return true;
