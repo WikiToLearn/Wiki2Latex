@@ -3,6 +3,7 @@ Wiki2LaTeX - WikiFM mod
 
 w2l is thought to elaborate wiki pages which do not contain LaTeX code. Now, in wikifm.org we use LaTeX code: this generates lots of bugs. Fortunately all LaTeX code is used inside specific tags:
 * \begin{equation} <-> \end{equation}
+* \begin{environ} <-> \end{environ} with environ = multiline, gather, array, align.
 * $$ <-> $$
 * &lt;math&gt; <-> &lt;/math&gt; (for inline code)
 * others??
@@ -22,7 +23,6 @@ Notes:
 
 TODO:
 -----
-- As for $$ and the equation environ handle the environs _align_, _multiline_, _gather_.
 - Translate w2l messages in w2lMessages.php, translate in italian and restore english.
 - look at code:other things @todo are here.
 - Mediawiki TOC is simply ignored by w2l, what to do?
