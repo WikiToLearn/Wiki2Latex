@@ -78,7 +78,11 @@ class Wiki2LaTeXCore {
 			return true;
 		}
 	}
-	
+/**
+  * @TODO Remove all the link to specific webpages from the source code, create
+  * an appropriate class or something suitable to handle this contents. 
+  * issues [linksToOutsite] [bugSignaling] [documentation]
+  */
 	// These Methods to do the work we have to do
 	private function onLatexform( $msg_add = '' ) {
 	    /*The connected hook is called when you click on the tab (for text view: w2lMessages.php»'w2l_tab') .
