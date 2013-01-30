@@ -267,8 +267,8 @@ Da questa pagina &egrave; possibile scaricare l&apos;articolo che
 		$output .= $this->getFolderLinks();
 		$output .= '</form>'."\n";
 		$output .= wfMsg('w2l_export_after_status',
-									'index.php/Portale_comunità/Contenuti/Elenco_Bug_wiki2latex',
-									'<a href="index.php/Portale_comunità/Contenuti/Wiki2LaTeX">','</a>');
+									'https://github.com/WikiFM/Wiki2Latex/',
+									'<a href="https://github.com/WikiFM/Wiki2Latex/">','</a>');
 		$output .= '</div>';
 
 		$wgOut->addHTML($output);
