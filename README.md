@@ -3,6 +3,7 @@ Wiki2LaTeX - WikiFM mod
 
 w2l is thought to elaborate wiki pages which do not contain LaTeX code. Now, in wikifm.org we use LaTeX code: this generates lots of bugs. Fortunately all LaTeX code is used inside specific tags:
 * \begin{equation} <-> \end{equation}
+* \begin{environ} <-> \end{environ} with environ = multiline, gather, array, align.
 * $$ <-> $$
 * &lt;math&gt; <-> &lt;/math&gt; (for inline code)
 * others??
@@ -17,16 +18,17 @@ Notes:
 ------
 - The Namespace LaTeX is undefined, can it be useful? User can define templates.
 - The documentation comments are used also to signal relevant parts of code which need corrections.
-
+- __[CSS]__ '#w2lFmFormer' is the id of the form in the w2llatexform page and 
+'.w2lLogOutput' is the class of the textareas in the onpdf page.
 
 TODO:
 -----
-- As for $$ and the equation environ handle the environs _align_, _multiline_, _gather_.
 - Translate w2l messages in w2lMessages.php, translate in italian and restore english.
 - look at code:other things @todo are here.
 - Mediawiki TOC is simply ignored by w2l, what to do?
 - Check links.
 - FIX $this->addSimpleReplace("...","{\dots}") in w2lParser::initParsing() & w2lPserse::doSpecialChars()
+- Check messages...there is the need for a strong code rearrangement.
 
 BUGS:
 ----

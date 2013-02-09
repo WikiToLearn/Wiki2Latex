@@ -258,11 +258,11 @@ class Wiki2LaTeXParser {
  * This function masks LaTeX text: it catches the tags and replace the whole LaTeX code with a
  * generated marker.
  * 
- * @todo enable recognition of other environ: multiline, split, gather.
+ * Enabled recognition of other environ: multiline, split, gather, array .
  * 
  * @author Alberto Giudici
  * @date Dec 2012
- * @version 0.1
+ * @version 0.2
  * @return parsed text
  */
 	function processPageLatexCode($pageText){
@@ -276,41 +276,26 @@ class Wiki2LaTeXParser {
   		$pageText = preg_replace_callback( $reMath, array($this,'maskLatexCodeInline'), $pageText);
 		
 		//now consider LaTeX environs
-		$pageText = $this->maskLatexCodeEquation($pageText);
+		$environs = array('equation','array','multiline','align', 'gather');
+		//important: equation must! be the first element of this array
+		$pageText = $this->maskLatexCodeEnviron($pageText,$environs);
 
 		$this->profileOut($fName);
 		return $pageText;
 	}
 /**
- * maskLatexCodeEquation masks LaTeX text between special tags.
+ * maskLatexCodeEnviron masks LaTeX text between special tags.
  * 
- * Start with text between \begin{equation} and \end{equation} and $$ $$.
+ * Start with text between \begin{$environ} and \end{$environ} and $$ $$.
+ * First mask text between $$ $$, other environs may be inside $$ or equation.
+ * 
  * @author Alberto Giudici
- * @version 0.1
+ * @version 0.2
  * @return text with masked contents
  */
-	public function maskLatexCodeEquation($pageText){
-	
-		// start with \begin{equation} <-> \end{equation}
-		$startSplitted = preg_split('/(\\\\begin\{equation\*?\})/',$pageText,0, PREG_SPLIT_DELIM_CAPTURE );
-		
-		array_shift($startSplitted);
-		for ($i=0;  $i < count($startSplitted);$i+=2){
-			$beginEnviron = $startSplitted[$i];//get \begin{equation\*?}
-			
-			$endSplitted = preg_split('/(\\\\end\{equation\*?\})/',$startSplitted[$i+1],0, PREG_SPLIT_DELIM_CAPTURE);
-			
-			$content = $endSplitted[0];
-			$endEnviron = $endSplitted[1];//get \end{equation\*?}
-			
-			$equationMk = $this->getMark('latex-code-equation');
-			$all = $beginEnviron.$content.$endEnviron;
-			$this->mask($equationMk, $all);
-			
-			$pageText = str_replace($all, $equationMk, $pageText);
-		}
-		
-		//now $$ <-> $$
+	public function maskLatexCodeEnviron($pageText,$environs){
+
+		//first $$ <-> $$
 		
 		$startSplitted = explode('$$',$pageText);
 		
@@ -325,6 +310,29 @@ class Wiki2LaTeXParser {
 			
 			$pageText = str_replace($all, $equationMk, $pageText);
 		}
+
+		// parse each environ in environs, they are latex ones.
+		foreach ($environs as $environ){
+			// start with \begin{equation} <-> \end{equation}
+			$startSplitted = preg_split('/(\\\\begin\{'.$environ.'\*?\})/',$pageText,0, PREG_SPLIT_DELIM_CAPTURE );
+			
+			array_shift($startSplitted);
+			for ($i=0;  $i < count($startSplitted);$i+=2){
+				$beginEnviron = $startSplitted[$i];//get \begin{equation\*?}
+				
+				$endSplitted = preg_split('/(\\\\end\{'.$environ.'\*?\})/',$startSplitted[$i+1],0, PREG_SPLIT_DELIM_CAPTURE);
+				
+				$content = $endSplitted[0];
+				$endEnviron = $endSplitted[1];//get \end{equation\*?}
+				
+				$environMk = $this->getMark('latex-code-'.$environ);
+				$all = $beginEnviron.$content.$endEnviron;
+				$this->mask($environMk, $all);
+				
+				$pageText = str_replace($all, $environMk, $pageText);
+			}
+		}
+		
 	
 		return $pageText;
 	}
