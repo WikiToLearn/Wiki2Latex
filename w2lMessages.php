@@ -77,8 +77,8 @@ Se trovi un bug <a href="https://github.com/WikiFM/Wiki2Latex/" title="apri la p
 	'w2l_compile_run' => '== Run #$1 ==',
 	'w2l_result_heading' => '<h2>LaTeX-Result</h2>',
 	'w2l_result_text' => '<h2>LaTeX-Result</h2>',
-	'w2l_result_folder'=> '<table style="width:100%;"><tr><td><big><strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=pdf">$2.pdf</a></strong></big></td><td style="text-align:right;">Additional links: <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a>, <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=log">$2.log</a></td></table>',
-	'w2l_result_tex'=> '<big><strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a></strong></big>',
+	'w2l_result_folder'=> '<table style="width:100%;"><tr><td><big><strong><a href="$1/extensions/Wiki2Latex/w2lSendFile.php?title=$2&fid=$3&fmt=pdf">$2.pdf</a></strong></big></td><td style="text-align:right;">Additional links: <a href="$1/extensions/Wiki2Latex/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a>, <a href="$1/extensions/Wiki2Latex/w2lSendFile.php?title=$2&fid=$3&fmt=log">$2.log</a></td></table>',
+	'w2l_result_tex'=> '<big><strong><a href="$1/extensions/Wiki2Latex/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a></strong></big>',
 	'w2l_parser_article_not_existing' => 'Article does not exist: $1',
 	'w2l_parser_protocol' => '<p>Error protocol</p>',
 	'w2l_parser_no_namespace' => 'Caution: Namespace could not be found: $1.',
@@ -87,7 +87,7 @@ Se trovi un bug <a href="https://github.com/WikiFM/Wiki2Latex/" title="apri la p
 	'w2l_form_delete_link' => 'Delete temporary files',
 	'w2l_delete_confirmation' => 'Really delete all files?',
 	'w2l_delete_file_confirmation' => 'Really delete file $1?',
-	'w2l_latex_failed' => '<p>LaTeX failed to create your file. Most often this error occurs when your LaTeX-Code requests packages which are not part of your LaTeX-Distribution: <a href="$1/extensions/w2l/w2lSendFile.php?fid=$2&fmt=tex">Main.tex</a>, <a href="$1/extensions/w2l/w2lSendFile.php?fid=$2&fmt=log">Main.log</a></p>', 
+	'w2l_latex_failed' => '<p>LaTeX failed to create your file. Most often this error occurs when your LaTeX-Code requests packages which are not part of your LaTeX-Distribution: <a href="$1/extensions/Wiki2Latex/w2lSendFile.php?fid=$2&fmt=tex">Main.tex</a>, <a href="$1/extensions/Wiki2Latex/w2lSendFile.php?fid=$2&fmt=log">Main.log</a></p>', 
 	'w2l_warning_archive_activated' => '<div style="border:1px solid black; margin:5px 10% 5px 10%;padding:5px;">You have enabled the archive-support of Wiki2LaTeX 0.7. This feature has been removed as of Version 0.8. You can still access your files <a href="$1">here</a>.</div>',
 	'w2l_temp_dir_missing' => 'Wiki2LaTeX could not create the temp-dir required in order to create the pdf. Please check that the server has all rights to access your system\'s tmp-dir.',
 	'w2l_show_log' => "show log file",
@@ -158,14 +158,14 @@ Se trovi un bug <a href="$1" title="apri la pagina per la segnalazione dei bug">
 	'w2l_result_text' => ' ',//@TODO.. insert text here
 	'w2l_result_folder'=> '<div style="padding-left:3%;">
 	<p>Scarica il pdf:<br />
-		<strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=pdf"> $2.pdf</a></strong>
+		<strong><a href="$1/extensions/Wiki2Latex/w2lSendFile.php?title=$2&fid=$3&fmt=pdf"> $2.pdf</a></strong>
 	</p>
 	<p>
-		Altri link: <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a>, <a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=log">$2.log</a> 
+		Altri link: <a href="$1/extensions/Wiki2Latex/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a>, <a href="$1/extensions/Wiki2Latex/w2lSendFile.php?title=$2&fid=$3&fmt=log">$2.log</a> 
 	</p></div>
 	<p> Se hai trovato un bug, un errore nel pdf, <a href="https://github.com/WikiFM/Wiki2Latex/" title="apri la pagina per la segnalazione dei bug"> segnalalo</a>!
 	</p>',
-	'w2l_result_tex'=> '<big><strong><a href="$1/extensions/w2l/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a></strong></big>',
+	'w2l_result_tex'=> '<big><strong><a href="$1/extensions/Wiki2Latex/w2lSendFile.php?title=$2&fid=$3&fmt=tex">$2.tex</a></strong></big>',
 	'w2l_parser_article_not_existing' => 'Article does not exist: $1',
 	'w2l_parser_protocol' => '<p>Error protocol</p>',
 	'w2l_parser_no_namespace' => 'Caution: Namespace could not be found: $1.',
@@ -174,7 +174,7 @@ Se trovi un bug <a href="$1" title="apri la pagina per la segnalazione dei bug">
 	'w2l_form_delete_link' => 'Delete temporary files',
 	'w2l_delete_confirmation' => 'Really delete all files?',
 	'w2l_delete_file_confirmation' => 'Really delete file $1?',
-	'w2l_latex_failed' => '<p>LaTeX failed to create your file. Most often this error occurs when your LaTeX-Code requests packages which are not part of your LaTeX-Distribution: <a href="$1/extensions/w2l/w2lSendFile.php?fid=$2&fmt=tex">Main.tex</a>, <a href="$1/extensions/w2l/w2lSendFile.php?fid=$2&fmt=log">Main.log</a></p>', 
+	'w2l_latex_failed' => '<p>LaTeX failed to create your file. Most often this error occurs when your LaTeX-Code requests packages which are not part of your LaTeX-Distribution: <a href="$1/extensions/Wiki2Latex/w2lSendFile.php?fid=$2&fmt=tex">Main.tex</a>, <a href="$1/extensions/Wiki2Latex/w2lSendFile.php?fid=$2&fmt=log">Main.log</a></p>', 
 	'w2l_warning_archive_activated' => '<div style="border:1px solid black; margin:5px 10% 5px 10%;padding:5px;">You have enabled the archive-support of Wiki2LaTeX 0.7. This feature has been removed as of Version 0.8. You can still access your files <a href="$1">here</a>.</div>',
 	'w2l_temp_dir_missing' => 'Wiki2LaTeX could not create the temp-dir required in order to create the pdf. Please check that the server has all rights to access your system\'s tmp-dir.',
 	'w2l_show_log' => "show log file",
