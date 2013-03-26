@@ -60,7 +60,7 @@ class Wiki2LaTeXHelper {
 		
 		// Check if messages are loaded. If not do so.
 		if ( $this->messagesLoaded == false ) {
-			wfLoadExtensionMessages( 'wiki2latex' );
+			//wfLoadExtensionMessages( 'wiki2latex' );
 			$this->messagesLoaded = true;
 		}
 
