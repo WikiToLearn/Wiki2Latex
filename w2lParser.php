@@ -1133,7 +1133,7 @@ class Wiki2LaTeXParser {
 				$this->repo = RepoGroup::singleton()->getLocalRepo();
 				$file = LocalFile::newFromTitle( $title, $this->repo );
 				if ( $file && $file->exists() ) {
-					$imagepath = "/var/www/wiki/";
+					$imagepath = "/var/www/production/"; // OMMIODDIO ORRIBILE
 					$imagepath .= $file->getLocalRefPath();
 					$imagepath = str_replace('\\', '/', $imagepath);
 				} else {
@@ -1144,8 +1144,8 @@ class Wiki2LaTeXParser {
 
 				$title = $file->getTitle()->getText();
 				$graphic_package = 'graphicx';
-				if (substr($imagepath, -3) === "svg") {
-					$img = substr($imagepath, 0, -4);
+				if (substr($imagepath, -3) === "svg") { // AIUTO AIUTO
+					$img = substr($imagepath, 0, -4); // SCAPPA FINCHE' SEI IN TEMPO!!!
 	                                $graphic_command = "\\begin{center} \\resizebox{".$imgwidth."}{!}{\includesvg{{$img}}}\\\\ \\textit{{$caption}}\\end{center}\n";
 				} else {
 					$graphic_command = "\\begin{center} \\resizebox{".$imgwidth."}{!}{\includegraphics{{$imagepath}}}\\\\ \\textit{{$caption}}\\end{center}\n";
